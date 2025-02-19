@@ -47,8 +47,3 @@
 )]
 
 pub use bevy_internal::*;
-
-// Wasm does not support dynamic linking.
-#[cfg(all(feature = "dynamic_linking", not(target_family = "wasm")))]
-#[allow(unused_imports)]
-use bevy_dylib;

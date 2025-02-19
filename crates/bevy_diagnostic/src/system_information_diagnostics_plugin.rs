@@ -49,14 +49,11 @@ pub struct SystemInfo {
 }
 
 // NOTE: sysinfo fails to compile when using bevy dynamic or on iOS and does nothing on Wasm
-#[cfg(all(
-    any(
-        target_os = "linux",
-        target_os = "windows",
-        target_os = "android",
-        target_os = "macos"
-    ),
-    not(feature = "dynamic_linking")
+#[cfg(any(
+    target_os = "linux",
+    target_os = "windows",
+    target_os = "android",
+    target_os = "macos"
 ))]
 pub mod internal {
     use alloc::sync::Arc;
@@ -193,15 +190,14 @@ pub mod internal {
     }
 }
 
-#[cfg(not(all(
+#[cfg(not(
     any(
         target_os = "linux",
         target_os = "windows",
         target_os = "android",
         target_os = "macos"
-    ),
-    not(feature = "dynamic_linking")
-)))]
+    )
+))]
 pub mod internal {
     use bevy_app::{App, Startup};
 

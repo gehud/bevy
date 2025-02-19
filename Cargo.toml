@@ -12,6 +12,9 @@ repository = "https://github.com/bevyengine/bevy"
 documentation = "https://docs.rs/bevy"
 rust-version = "1.82.0"
 
+[lib]
+crate-type = ["rlib", "dylib"]
+
 [workspace]
 exclude = [
   "benches",
@@ -156,7 +159,7 @@ bevy_ui_picking_backend = [
 ]
 
 # Force dynamic linking, which improves iterative compile times
-dynamic_linking = ["dep:bevy_dylib", "bevy_internal/dynamic_linking"]
+dynamic_linking = []
 
 # Enables system information diagnostic plugin
 sysinfo_plugin = ["bevy_internal/sysinfo_plugin"]
@@ -464,10 +467,6 @@ ghost_nodes = ["bevy_internal/ghost_nodes"]
 
 [dependencies]
 bevy_internal = { path = "crates/bevy_internal", version = "0.15.2", default-features = false }
-
-# Wasm does not support dynamic linking.
-[target.'cfg(not(target_family = "wasm"))'.dependencies]
-bevy_dylib = { path = "crates/bevy_dylib", version = "0.15.2", default-features = false, optional = true }
 
 [dev-dependencies]
 rand = "0.8.0"
