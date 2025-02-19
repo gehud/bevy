@@ -9,6 +9,9 @@ license = "MIT OR Apache-2.0"
 keywords = ["game", "engine", "gamedev", "graphics", "bevy"]
 categories = ["game-engines", "graphics", "gui", "rendering"]
 
+[lib]
+crate-type = ["rlib", "dylib"]
+
 [features]
 trace = [
   "bevy_app/trace",
@@ -168,9 +171,6 @@ bevy_gizmos = ["dep:bevy_gizmos", "bevy_image"]
 bevy_gltf = ["dep:bevy_gltf", "bevy_image"]
 bevy_ui = ["dep:bevy_ui", "bevy_image"]
 bevy_image = ["dep:bevy_image"]
-
-# Used to disable code that is unsupported when Bevy is dynamically linked
-dynamic_linking = ["bevy_diagnostic/dynamic_linking"]
 
 # Enable using a shared stdlib for cxx on Android.
 android_shared_stdcxx = ["bevy_audio/android_shared_stdcxx"]

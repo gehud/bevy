@@ -9,6 +9,9 @@ license = "MIT OR Apache-2.0"
 keywords = ["bevy"]
 rust-version = "1.68.2"
 
+[lib]
+crate-type = ["rlib", "dylib"]
+
 [dependencies]
 glam = { version = "0.29", features = ["bytemuck"] }
 derive_more = { version = "1", default-features = false, features = [

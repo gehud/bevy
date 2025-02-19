@@ -158,9 +158,6 @@ bevy_ui_picking_backend = [
   "bevy_internal/bevy_ui_picking_backend",
 ]
 
-# Force dynamic linking, which improves iterative compile times
-dynamic_linking = []
-
 # Enables system information diagnostic plugin
 sysinfo_plugin = ["bevy_internal/sysinfo_plugin"]
 

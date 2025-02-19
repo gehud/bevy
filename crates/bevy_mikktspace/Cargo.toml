@@ -15,6 +15,9 @@ license = "Zlib AND (MIT OR Apache-2.0)"
 keywords = ["bevy", "3D", "graphics", "algorithm", "tangent"]
 rust-version = "1.76.0"
 
+[lib]
+crate-type = ["rlib", "dylib"]
+
 [features]
 default = ["std"]
 

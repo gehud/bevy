@@ -9,6 +9,9 @@ license = "MIT OR Apache-2.0"
 keywords = ["bevy"]
 rust-version = "1.76.0"
 
+[lib]
+crate-type = ["rlib", "dylib"]
+
 [features]
 default = ["smallvec", "debug", "alloc"]
 # When enabled, provides Bevy-related reflection implementations
