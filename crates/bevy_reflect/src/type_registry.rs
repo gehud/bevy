@@ -297,7 +297,13 @@ impl TypeRegistry {
     /// [TypeRegistration] at the [TypeId] if the [TypeRegistration] was
     /// previously in the map.
     pub fn remove(&mut self, type_id: TypeId) -> Option<TypeRegistration> {
-        self.registrations.remove(&type_id)
+        self.registrations.remove(&type_id).inspect(|registration| {
+            let short_name = registration.type_info().type_path_table().short_path();
+            self.short_path_to_id.remove(short_name);
+            self.ambiguous_names.remove(short_name);
+            self.type_path_to_id
+                .remove(registration.type_info().type_path());
+        })
     }
 
     /// Returns a reference to the [`TypeRegistration`] of the type with the
