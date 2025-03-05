@@ -163,6 +163,14 @@ impl TypeRegistry {
         }
     }
 
+    /// Removes a [TypeRegistration] of the type from a [TypeRegistry].
+    pub fn remove<T>(&mut self) -> Option<TypeRegistration>
+    where
+        T: GetTypeRegistration,
+    {
+        self.registrations.remove(&TypeId::of::<T>())
+    }
+
     /// Attempts to register the type described by `registration`.
     ///
     /// If the registration for the type already exists, it will not be registered again.
