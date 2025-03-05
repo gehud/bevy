@@ -163,14 +163,6 @@ impl TypeRegistry {
         }
     }
 
-    /// Removes a [TypeRegistration] of the type from a [TypeRegistry].
-    pub fn remove<T>(&mut self) -> Option<TypeRegistration>
-    where
-        T: GetTypeRegistration,
-    {
-        self.registrations.remove(&TypeId::of::<T>())
-    }
-
     /// Attempts to register the type described by `registration`.
     ///
     /// If the registration for the type already exists, it will not be registered again.
@@ -299,6 +291,13 @@ impl TypeRegistry {
     /// If the specified type has not been registered, returns `None`.
     pub fn get_mut(&mut self, type_id: TypeId) -> Option<&mut TypeRegistration> {
         self.registrations.get_mut(&type_id)
+    }
+
+    /// Removes a [TypeRegistration] from the [TypeRegistry], returning the
+    /// [TypeRegistration] at the [TypeId] if the [TypeRegistration] was
+    /// previously in the map.
+    pub fn remove(&mut self, type_id: TypeId) -> Option<TypeRegistration> {
+        self.registrations.remove(&type_id)
     }
 
     /// Returns a reference to the [`TypeRegistration`] of the type with the
