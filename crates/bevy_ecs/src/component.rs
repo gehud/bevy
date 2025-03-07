@@ -875,6 +875,9 @@ impl ComponentDescriptor {
     }
 }
 
+#[derive(Default, Component)]
+struct Unregistered;
+
 /// Stores metadata associated with each kind of [`Component`] in a given [`World`].
 #[derive(Debug, Default)]
 pub struct Components {
@@ -895,6 +898,7 @@ impl Components {
     #[inline]
     pub fn register_component<T: Component>(&mut self, storages: &mut Storages) -> ComponentId {
         let mut registered = false;
+
         let id = {
             let Components {
                 indices,
@@ -912,6 +916,12 @@ impl Components {
                 id
             })
         };
+
+        if !self.is_component_registered(id) {
+            registered = false;
+            self.components[id.index()].descriptor = ComponentDescriptor::new::<T>();
+        }
+
         if registered {
             let mut required_components = RequiredComponents::default();
             T::register_required_components(id, self, storages, &mut required_components, 0);
@@ -919,7 +929,36 @@ impl Components {
             T::register_component_hooks(&mut info.hooks);
             info.required_components = required_components;
         }
+
         id
+    }
+
+    /// Returns `true` if [`Component`] is valid and registered. Otherwise, this returns `false`.
+    pub fn is_component_registered(&self, id: ComponentId) -> bool {
+        self.components.get(id.index()).is_some_and(|info| {
+            info.type_id()
+                .is_some_and(|type_id| type_id != TypeId::of::<Unregistered>())
+        })
+    }
+
+    /// Unregisters [`Component`] and all [`Component`]'s that requires it.
+    pub fn unregister_component(&mut self, id: ComponentId) {
+        if !self.is_component_registered(id) {
+            return;
+        }
+
+        if let Some(required_by) = self.get_required_by(id) {
+            for id in required_by.clone() {
+                self.unregister_component(id);
+            }
+        }
+
+        if let Some(info) = self.components.get_mut(id.index()) {
+            info.descriptor = ComponentDescriptor::new::<Unregistered>();
+            info.hooks = Default::default();
+            info.required_by.clear();
+            info.required_components.0.clear();
+        }
     }
 
     /// Registers a component described by `descriptor`.
