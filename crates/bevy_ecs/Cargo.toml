@@ -10,6 +10,9 @@ keywords = ["ecs", "game", "bevy"]
 categories = ["game-engines", "data-structures"]
 rust-version = "1.85.0"
 
+[lib]
+crate-type = ["rlib", "dylib"]
+
 [features]
 default = ["std", "bevy_reflect", "async_executor", "backtrace"]
 

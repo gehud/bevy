@@ -557,10 +557,10 @@
 //! [`ArgList`]: crate::func::ArgList
 //! [derive `Reflect`]: derive@crate::Reflect
 
-#![no_std]
+// #![no_std]
 
-#[cfg(feature = "std")]
-extern crate std;
+// #[cfg(feature = "std")]
+// extern crate std;
 
 extern crate alloc;
 

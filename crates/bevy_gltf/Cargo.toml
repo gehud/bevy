@@ -8,6 +8,9 @@ repository = "https://github.com/bevyengine/bevy"
 license = "MIT OR Apache-2.0"
 keywords = ["bevy"]
 
+[lib]
+crate-type = ["rlib", "dylib"]
+
 [features]
 dds = ["bevy_render/dds", "bevy_image/dds", "bevy_core_pipeline/dds"]
 pbr_transmission_textures = ["bevy_pbr/pbr_transmission_textures"]

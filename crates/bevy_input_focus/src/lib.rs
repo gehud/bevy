@@ -4,7 +4,7 @@
     html_logo_url = "https://bevyengine.org/assets/icon.png",
     html_favicon_url = "https://bevyengine.org/assets/icon.png"
 )]
-#![no_std]
+// #![no_std]
 
 //! A UI-centric focus system for Bevy.
 //!
@@ -17,8 +17,8 @@
 //! This crate does *not* provide any integration with UI widgets: this is the responsibility of the widget crate,
 //! which should depend on [`bevy_input_focus`](crate).
 
-#[cfg(feature = "std")]
-extern crate std;
+// #[cfg(feature = "std")]
+// extern crate std;
 
 extern crate alloc;
 

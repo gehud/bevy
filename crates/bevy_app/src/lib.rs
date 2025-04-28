@@ -11,12 +11,12 @@
     html_logo_url = "https://bevyengine.org/assets/icon.png",
     html_favicon_url = "https://bevyengine.org/assets/icon.png"
 )]
-#![no_std]
+// #![no_std]
 
 //! This crate is about everything concerning the highest-level, application layer of a Bevy app.
 
-#[cfg(feature = "std")]
-extern crate std;
+// #[cfg(feature = "std")]
+// extern crate std;
 
 extern crate alloc;
 

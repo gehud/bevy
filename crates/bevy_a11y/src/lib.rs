@@ -4,7 +4,7 @@
     html_logo_url = "https://bevyengine.org/assets/icon.png",
     html_favicon_url = "https://bevyengine.org/assets/icon.png"
 )]
-#![no_std]
+// #![no_std]
 
 //! Accessibility for Bevy
 //!
@@ -14,8 +14,8 @@
 //!
 //! Make sure to use the same version of `accesskit` as Bevy.
 
-#[cfg(feature = "std")]
-extern crate std;
+// #[cfg(feature = "std")]
+// extern crate std;
 
 extern crate alloc;
 

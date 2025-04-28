@@ -16,10 +16,10 @@
     html_logo_url = "https://bevyengine.org/assets/icon.png",
     html_favicon_url = "https://bevyengine.org/assets/icon.png"
 )]
-#![no_std]
+// #![no_std]
 
-#[cfg(feature = "std")]
-extern crate std;
+// #[cfg(feature = "std")]
+// extern crate std;
 
 #[cfg(target_pointer_width = "16")]
 compile_error!("bevy_ecs cannot safely compile for a 16-bit platform.");

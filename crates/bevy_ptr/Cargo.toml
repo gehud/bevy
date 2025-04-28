@@ -9,6 +9,9 @@ license = "MIT OR Apache-2.0"
 keywords = ["bevy", "no_std"]
 rust-version = "1.85.0"
 
+[lib]
+crate-type = ["rlib", "dylib"]
+
 [dependencies]
 
 [lints]
