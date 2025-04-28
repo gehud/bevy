@@ -143,12 +143,6 @@ impl AssetServer {
         }
     }
 
-    /// Returns living labeled assets for for the given path.
-    /// This should only be set when watching for changes to avoid unnecessary work.
-    pub fn get_living_labeled_assets<'a>(&self, path: impl Into<AssetPath<'a>>) -> Option<HashSet<Box<str>>> {
-        self.data.infos.read().living_labeled_assets.get(&path.into()).cloned()
-    }
-
     /// Retrieves the [`AssetSource`] for the given `source`.
     pub fn get_source<'a>(
         &self,

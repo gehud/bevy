@@ -8,9 +8,6 @@ repository = "https://github.com/bevyengine/bevy"
 license = "MIT OR Apache-2.0"
 keywords = ["bevy"]
 
-[lib]
-crate-type = ["rlib", "dylib"]
-
 [features]
 default = ["std", "bevy_reflect"]
 

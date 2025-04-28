@@ -237,7 +237,7 @@ pub mod internal {
     }
 }
 
-#[cfg(not(
+#[cfg(not(all(
     any(
         target_os = "linux",
         target_os = "windows",

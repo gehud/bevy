@@ -8,9 +8,6 @@ repository = "https://github.com/bevyengine/bevy"
 license = "MIT OR Apache-2.0"
 keywords = ["bevy"]
 
-[lib]
-crate-type = ["rlib", "dylib"]
-
 [dependencies]
 # bevy
 bevy_asset = { path = "../bevy_asset", version = "0.16.0" }

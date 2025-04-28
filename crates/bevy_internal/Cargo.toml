@@ -9,9 +9,6 @@ license = "MIT OR Apache-2.0"
 keywords = ["game", "engine", "gamedev", "graphics", "bevy"]
 categories = ["game-engines", "graphics", "gui", "rendering"]
 
-[lib]
-crate-type = ["rlib", "dylib"]
-
 [features]
 trace = [
   "bevy_app/trace",

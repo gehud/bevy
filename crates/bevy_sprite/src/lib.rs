@@ -57,20 +57,8 @@ use bevy_render::{
 };
 
 /// Adds support for 2D sprite rendering.
-pub struct SpritePlugin {
-    /// Whether to add the sprite picking backend to the app.
-    #[cfg(feature = "bevy_sprite_picking_backend")]
-    pub add_picking: bool,
-}
-
-impl Default for SpritePlugin {
-    fn default() -> Self {
-        Self {
-            #[cfg(feature = "bevy_sprite_picking_backend")]
-            add_picking: true,
-        }
-    }
-}
+#[derive(Default)]
+pub struct SpritePlugin;
 
 pub const SPRITE_SHADER_HANDLE: Handle<Shader> =
     weak_handle!("ed996613-54c0-49bd-81be-1c2d1a0d03c2");

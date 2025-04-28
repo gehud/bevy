@@ -9,9 +9,6 @@ license = "MIT OR Apache-2.0"
 keywords = ["bevy", "color"]
 rust-version = "1.85.0"
 
-[lib]
-crate-type = ["rlib", "dylib"]
-
 [dependencies]
 bevy_math = { path = "../bevy_math", version = "0.16.0", default-features = false, features = [
   "curve",

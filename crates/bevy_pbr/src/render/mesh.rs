@@ -174,10 +174,6 @@ impl Plugin for MeshRenderPlugin {
             return;
         }
 
-        if app.get_sub_app(RenderApp).is_none() {
-            return;
-        }
-
         app.add_systems(
             PostUpdate,
             (no_automatic_skin_batching, no_automatic_morph_batching),

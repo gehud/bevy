@@ -1,4 +1,5 @@
 #![doc = include_str!("../README.md")]
+#![no_std]
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
 #![expect(unsafe_code, reason = "Raw pointers are inherently unsafe.")]
 #![doc(

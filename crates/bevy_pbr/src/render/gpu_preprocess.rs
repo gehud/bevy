@@ -429,11 +429,6 @@ pub struct PhaseBuildIndirectParametersBindGroups {
 #[derive(Component, Default)]
 pub struct SkipGpuPreprocess;
 
-/// Stops the `GpuPreprocessNode` attempting to generate the buffer for this view
-/// useful to avoid duplicating effort if the bind group is shared between views
-#[derive(Component)]
-pub struct SkipGpuPreprocess;
-
 impl Plugin for GpuMeshPreprocessPlugin {
     fn build(&self, app: &mut App) {
         load_internal_asset!(

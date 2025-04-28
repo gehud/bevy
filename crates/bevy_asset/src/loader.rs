@@ -348,11 +348,6 @@ impl<'a> LoadContext<'a> {
         }
     }
 
-    /// Returns an [`AssetServer`].
-    pub fn asset_server(&self) -> &AssetServer {
-        self.asset_server
-    }
-
     /// Begins a new labeled asset load. Use the returned [`LoadContext`] to load
     /// dependencies for the new asset and call [`LoadContext::finish`] to finalize the asset load.
     /// When finished, make sure you call [`LoadContext::add_labeled_asset`] to add the results back to the parent

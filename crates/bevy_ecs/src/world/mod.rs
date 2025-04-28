@@ -287,11 +287,6 @@ impl World {
         dqf.register_disabling_component(component_id);
     }
 
-    /// Unregisters [`Component`] and all [`Component`]'s that requires it.
-    pub fn unregister_component(&mut self, id: ComponentId) {
-        self.components.unregister_component(id);
-    }
-
     /// Returns a mutable reference to the [`ComponentHooks`] for a [`Component`] type.
     ///
     /// Will panic if `T` exists in any archetypes.

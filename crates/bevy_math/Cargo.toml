@@ -9,9 +9,6 @@ license = "MIT OR Apache-2.0"
 keywords = ["bevy"]
 rust-version = "1.85.0"
 
-[lib]
-crate-type = ["rlib", "dylib"]
-
 [dependencies]
 glam = { version = "0.29.3", default-features = false, features = ["bytemuck"] }
 thiserror = { version = "2", default-features = false }

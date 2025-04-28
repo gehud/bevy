@@ -1745,7 +1745,6 @@ impl<'w> ComponentsRegistrator<'w> {
         unsafe {
             self.register_component_unchecked::<T>(recursion_check_stack, id);
         }
-
         id
     }
 

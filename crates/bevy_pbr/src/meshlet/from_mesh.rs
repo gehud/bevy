@@ -25,11 +25,6 @@ const TARGET_MESHLETS_PER_GROUP: usize = 8;
 // Reject groups that keep over 95% of their original triangles
 const SIMPLIFICATION_FAILURE_PERCENTAGE: f32 = 0.95;
 
-// Aim to have 8 meshlets per group
-const TARGET_MESHLETS_PER_GROUP: usize = 8;
-// Reject groups that keep over 95% of their original triangles
-const SIMPLIFICATION_FAILURE_PERCENTAGE: f32 = 0.95;
-
 /// Default vertex position quantization factor for use with [`MeshletMesh::from_mesh`].
 ///
 /// Snaps vertices to the nearest 1/16th of a centimeter (1/2^4).
@@ -359,7 +354,7 @@ fn compute_meshlets(
 }
 
 fn find_connected_meshlets(
-    simplification_queue: &[usize],
+    simplification_queue: Range<usize>,
     meshlets: &Meshlets,
     position_only_vertex_remap: &[u32],
     position_only_vertex_count: usize,
