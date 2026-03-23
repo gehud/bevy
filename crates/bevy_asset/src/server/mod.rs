@@ -186,6 +186,17 @@ impl AssetServer {
         self.data.sources.get(source.into())
     }
 
+    /// Returns living labeled assets for a given source asset (only if [`AssetServer`] watches for changes).
+    pub fn get_living_labeled_assets<'a>(
+        &self,
+        path: impl Into<AssetPath<'a>>,
+    ) -> Option<HashSet<Box<str>>> {
+        self.read_infos()
+            .living_labeled_assets
+            .get(&path.into())
+            .cloned()
+    }
+
     /// Returns true if the [`AssetServer`] watches for changes.
     pub fn watching_for_changes(&self) -> bool {
         self.read_infos().watching_for_changes
