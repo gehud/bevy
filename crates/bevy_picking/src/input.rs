@@ -23,7 +23,7 @@ use bevy_input::{
 use bevy_math::Vec2;
 use bevy_platform::collections::{HashMap, HashSet};
 use bevy_reflect::prelude::*;
-use bevy_window::{CursorGrabMode, CursorOptions, PrimaryWindow, WindowEvent, WindowRef};
+use bevy_window::{PrimaryWindow, WindowEvent, WindowRef};
 use tracing::debug;
 
 use crate::pointer::{
@@ -122,12 +122,11 @@ pub fn mouse_pick_events(
     // Input
     mut window_events: MessageReader<WindowEvent>,
     primary_window: Query<Entity, With<PrimaryWindow>>,
-    cursors: Query<&CursorOptions>,
     // Locals
     mut cursor_last: Local<Vec2>,
     // Output
     mut pointer_inputs: MessageWriter<PointerInput>,
-) -> Result {
+) {
     for window_event in window_events.read() {
         match window_event {
             // Handle cursor movement events
@@ -141,23 +140,13 @@ pub fn mouse_pick_events(
                     },
                     position: event.position,
                 };
-
-                let cursor = cursors.get(event.window)?;
-
-                let delta = if matches!(cursor.grab_mode, CursorGrabMode::None) {
-                    // Cursor may be outside the window: the cached cursor position is used.
-                    event.position - *cursor_last
-                } else {
-                    // Cursor is within the window space: we can use the system cursor delta.
-                    event.delta.unwrap_or_default()
-                };
-
                 pointer_inputs.write(PointerInput::new(
                     PointerId::Mouse,
                     location,
-                    PointerAction::Move { delta },
+                    PointerAction::Move {
+                        delta: event.position - *cursor_last,
+                    },
                 ));
-
                 *cursor_last = event.position;
             }
             // Handle mouse button press events
@@ -203,8 +192,6 @@ pub fn mouse_pick_events(
             _ => {}
         }
     }
-
-    Ok(())
 }
 
 /// Sends touch pointer events to be consumed by the core plugin
