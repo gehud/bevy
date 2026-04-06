@@ -75,7 +75,7 @@ use bevy_render::{
 
 use self::graph::{Core2d, Node2d};
 
-pub const CORE_2D_DEPTH_FORMAT: TextureFormat = TextureFormat::Depth32Float;
+pub const CORE_2D_DEPTH_FORMAT: TextureFormat = TextureFormat::Depth32FloatStencil8;
 
 pub struct Core2dPlugin;
 
