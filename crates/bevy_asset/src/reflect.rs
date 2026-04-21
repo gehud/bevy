@@ -5,7 +5,7 @@ use bevy_ecs::world::{unsafe_world_cell::UnsafeWorldCell, World};
 use bevy_reflect::{FromReflect, FromType, PartialReflect, Reflect};
 
 use crate::{
-    Asset, AssetId, Assets, Handle, InvalidGenerationError, UntypedAssetId, UntypedHandle,
+    Asset, AssetId, AssetPath, AssetServer, Assets, Handle, InvalidGenerationError, UntypedAssetId, UntypedHandle
 };
 
 /// Type data for the [`TypeRegistry`](bevy_reflect::TypeRegistry) used to operate on reflected [`Asset`]s.
@@ -225,6 +225,7 @@ pub struct ReflectHandle {
     asset_type_id: TypeId,
     downcast_handle_untyped: fn(&dyn Any) -> Option<UntypedHandle>,
     typed: fn(UntypedHandle) -> Box<dyn Reflect>,
+    load: fn(&AssetServer, AssetPath) -> Box<dyn Reflect>
 }
 
 impl ReflectHandle {
@@ -243,6 +244,11 @@ impl ReflectHandle {
     pub fn typed(&self, handle: UntypedHandle) -> Box<dyn Reflect> {
         (self.typed)(handle)
     }
+
+    /// A way to load a [`Handle<T>`].
+    pub fn load<'a>(&self, asset_server: &AssetServer, asset_path: impl Into<AssetPath<'a>>) -> Box<dyn Reflect> {
+        (self.load)(asset_server, asset_path.into())
+    }
 }
 
 impl<A: Asset> FromType<Handle<A>> for ReflectHandle {
@@ -255,6 +261,9 @@ impl<A: Asset> FromType<Handle<A>> for ReflectHandle {
                     .map(|h| h.clone().untyped())
             },
             typed: |handle: UntypedHandle| Box::new(handle.typed_debug_checked::<A>()),
+            load: |asset_server, asset_path| {
+                Box::new(asset_server.load::<A>(asset_path))
+            }
         }
     }
 }
