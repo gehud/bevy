@@ -58,12 +58,13 @@ use bevy_utils::default;
 /// ```
 ///
 /// [`Reflect`]: bevy_reflect::Reflect
+#[allow(missing_docs)]
 pub struct DynamicSceneBuilder<'w> {
-    extracted_resources: BTreeMap<ComponentId, Box<dyn PartialReflect>>,
-    extracted_scene: BTreeMap<Entity, DynamicEntity>,
-    component_filter: SceneFilter,
-    resource_filter: SceneFilter,
-    original_world: &'w World,
+    pub extracted_resources: BTreeMap<ComponentId, Box<dyn PartialReflect>>,
+    pub extracted_scene: BTreeMap<Entity, DynamicEntity>,
+    pub component_filter: SceneFilter,
+    pub resource_filter: SceneFilter,
+    pub original_world: &'w World,
 }
 
 impl<'w> DynamicSceneBuilder<'w> {
