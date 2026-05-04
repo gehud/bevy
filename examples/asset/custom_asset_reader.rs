@@ -15,22 +15,23 @@ use std::path::Path;
 struct CustomAssetReader(Box<dyn ErasedAssetReader>);
 
 impl AssetReader for CustomAssetReader {
-    async fn read<'a>(&'a self, path: &'a Path) -> Result<impl Reader + 'a, AssetReaderError> {
+    async fn read<'a, 'b: 'a>(&'a self, path: &'b Path) -> Result<impl Reader + 'a, AssetReaderError> {
         info!("Reading {}", path.display());
         self.0.read(path).await
     }
-    async fn read_meta<'a>(&'a self, path: &'a Path) -> Result<impl Reader + 'a, AssetReaderError> {
+    
+    async fn read_meta<'a, 'b: 'a>(&'a self, path: &'b Path) -> Result<impl Reader + 'a, AssetReaderError> {
         self.0.read_meta(path).await
     }
 
-    async fn read_directory<'a>(
+    async fn read_directory<'a, 'b: 'a>(
         &'a self,
-        path: &'a Path,
+        path: &'b Path,
     ) -> Result<Box<PathStream>, AssetReaderError> {
         self.0.read_directory(path).await
     }
 
-    async fn is_directory<'a>(&'a self, path: &'a Path) -> Result<bool, AssetReaderError> {
+    async fn is_directory<'a, 'b: 'a>(&'a self, path: &'b Path) -> Result<bool, AssetReaderError> {
         self.0.is_directory(path).await
     }
 }

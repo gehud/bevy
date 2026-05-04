@@ -55,7 +55,7 @@ impl<R: AssetReader> GatedReader<R> {
 }
 
 impl<R: AssetReader> AssetReader for GatedReader<R> {
-    async fn read<'a>(&'a self, path: &'a Path) -> Result<impl Reader + 'a, AssetReaderError> {
+    async fn read<'a, 'b: 'a>(&'a self, path: &'b Path) -> Result<impl Reader + 'a, AssetReaderError> {
         let receiver = {
             let mut gates = self.gates.write().unwrap_or_else(PoisonError::into_inner);
             let gates = gates
@@ -68,18 +68,18 @@ impl<R: AssetReader> AssetReader for GatedReader<R> {
         Ok(result)
     }
 
-    async fn read_meta<'a>(&'a self, path: &'a Path) -> Result<impl Reader + 'a, AssetReaderError> {
+    async fn read_meta<'a, 'b: 'a>(&'a self, path: &'b Path) -> Result<impl Reader + 'a, AssetReaderError> {
         self.reader.read_meta(path).await
     }
 
-    async fn read_directory<'a>(
+    async fn read_directory<'a, 'b: 'a>(
         &'a self,
-        path: &'a Path,
+        path: &'b Path,
     ) -> Result<Box<PathStream>, AssetReaderError> {
         self.reader.read_directory(path).await
     }
 
-    async fn is_directory<'a>(&'a self, path: &'a Path) -> Result<bool, AssetReaderError> {
+    async fn is_directory<'a, 'b: 'a>(&'a self, path: &'b Path) -> Result<bool, AssetReaderError> {
         self.reader.is_directory(path).await
     }
 }

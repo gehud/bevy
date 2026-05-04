@@ -72,7 +72,7 @@ impl<'a> Reader for GuardedFile<'a> {
 }
 
 impl AssetReader for FileAssetReader {
-    async fn read<'a>(&'a self, path: &'a Path) -> Result<impl Reader + 'a, AssetReaderError> {
+    async fn read<'a, 'b: 'a>(&'a self, path: &'b Path) -> Result<impl Reader + 'a, AssetReaderError> {
         #[cfg(not(target_os = "windows"))]
         let _guard = maybe_get_semaphore().await;
 
@@ -95,7 +95,7 @@ impl AssetReader for FileAssetReader {
             })
     }
 
-    async fn read_meta<'a>(&'a self, path: &'a Path) -> Result<impl Reader + 'a, AssetReaderError> {
+    async fn read_meta<'a, 'b: 'a>(&'a self, path: &'b Path) -> Result<impl Reader + 'a, AssetReaderError> {
         #[cfg(not(target_os = "windows"))]
         let _guard = maybe_get_semaphore().await;
 
@@ -119,9 +119,9 @@ impl AssetReader for FileAssetReader {
             })
     }
 
-    async fn read_directory<'a>(
+    async fn read_directory<'a, 'b: 'a>(
         &'a self,
-        path: &'a Path,
+        path: &'b Path,
     ) -> Result<Box<PathStream>, AssetReaderError> {
         let full_path = self.root_path.join(path);
         match read_dir(&full_path).await {
@@ -162,7 +162,7 @@ impl AssetReader for FileAssetReader {
         }
     }
 
-    async fn is_directory<'a>(&'a self, path: &'a Path) -> Result<bool, AssetReaderError> {
+    async fn is_directory<'a, 'b: 'a>(&'a self, path: &'b Path) -> Result<bool, AssetReaderError> {
         let full_path = self.root_path.join(path);
         let metadata = full_path
             .metadata()
