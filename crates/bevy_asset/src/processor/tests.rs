@@ -195,25 +195,25 @@ impl<R: AssetReader> LockGatedReader<R> {
 }
 
 impl<R: AssetReader> AssetReader for LockGatedReader<R> {
-    async fn read<'a, 'b: 'a>(&'a self, path: &'b Path) -> Result<impl Reader + 'a, AssetReaderError> {
+    async fn read<'a>(&'a self, path: &'a Path) -> Result<impl Reader + 'a, AssetReaderError> {
         let _guard = self.gate.read().await;
         self.reader.read(path).await
     }
 
-    async fn read_meta<'a, 'b: 'a>(&'a self, path: &'b Path) -> Result<impl Reader + 'a, AssetReaderError> {
+    async fn read_meta<'a>(&'a self, path: &'a Path) -> Result<impl Reader + 'a, AssetReaderError> {
         let _guard = self.gate.read().await;
         self.reader.read_meta(path).await
     }
 
-    async fn read_directory<'a, 'b: 'a>(
+    async fn read_directory<'a>(
         &'a self,
-        path: &'b Path,
+        path: &'a Path,
     ) -> Result<Box<PathStream>, AssetReaderError> {
         let _guard = self.gate.read().await;
         self.reader.read_directory(path).await
     }
 
-    async fn is_directory<'a, 'b: 'a>(&'a self, path: &'b Path) -> Result<bool, AssetReaderError> {
+    async fn is_directory<'a>(&'a self, path: &'a Path) -> Result<bool, AssetReaderError> {
         let _guard = self.gate.read().await;
         self.reader.is_directory(path).await
     }
