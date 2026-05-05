@@ -16,7 +16,7 @@ use core::marker::PhantomData;
 use core::time::Duration;
 #[cfg(not(target_os = "windows"))]
 use futures_util::{future, pin_mut};
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 use super::{FileAssetReader, FileAssetWriter};
 
@@ -172,7 +172,7 @@ impl AssetReader for FileAssetReader {
 }
 
 impl AssetWriter for FileAssetWriter {
-    async fn write<'a>(&'a self, path: &'a Path) -> Result<Box<Writer>, AssetWriterError> {
+    async fn write<'a>(&'a self, path: PathBuf) -> Result<Box<Writer>, AssetWriterError> {
         let full_path = self.root_path.join(path);
         if let Some(parent) = full_path.parent() {
             async_fs::create_dir_all(parent).await?;
@@ -182,8 +182,8 @@ impl AssetWriter for FileAssetWriter {
         Ok(writer)
     }
 
-    async fn write_meta<'a>(&'a self, path: &'a Path) -> Result<Box<Writer>, AssetWriterError> {
-        let meta_path = get_meta_path(path);
+    async fn write_meta<'a>(&'a self, path: PathBuf) -> Result<Box<Writer>, AssetWriterError> {
+        let meta_path = get_meta_path(&path);
         let full_path = self.root_path.join(meta_path);
         if let Some(parent) = full_path.parent() {
             async_fs::create_dir_all(parent).await?;
@@ -193,14 +193,14 @@ impl AssetWriter for FileAssetWriter {
         Ok(writer)
     }
 
-    async fn remove<'a>(&'a self, path: &'a Path) -> Result<(), AssetWriterError> {
+    async fn remove<'a>(&'a self, path: PathBuf) -> Result<(), AssetWriterError> {
         let full_path = self.root_path.join(path);
         async_fs::remove_file(full_path).await?;
         Ok(())
     }
 
-    async fn remove_meta<'a>(&'a self, path: &'a Path) -> Result<(), AssetWriterError> {
-        let meta_path = get_meta_path(path);
+    async fn remove_meta<'a>(&'a self, path: PathBuf) -> Result<(), AssetWriterError> {
+        let meta_path = get_meta_path(&path);
         let full_path = self.root_path.join(meta_path);
         async_fs::remove_file(full_path).await?;
         Ok(())
@@ -208,8 +208,8 @@ impl AssetWriter for FileAssetWriter {
 
     async fn rename<'a>(
         &'a self,
-        old_path: &'a Path,
-        new_path: &'a Path,
+        old_path: PathBuf,
+        new_path: PathBuf,
     ) -> Result<(), AssetWriterError> {
         let full_old_path = self.root_path.join(old_path);
         let full_new_path = self.root_path.join(new_path);
@@ -222,11 +222,11 @@ impl AssetWriter for FileAssetWriter {
 
     async fn rename_meta<'a>(
         &'a self,
-        old_path: &'a Path,
-        new_path: &'a Path,
+        old_path: PathBuf,
+        new_path: PathBuf,
     ) -> Result<(), AssetWriterError> {
-        let old_meta_path = get_meta_path(old_path);
-        let new_meta_path = get_meta_path(new_path);
+        let old_meta_path = get_meta_path(&old_path);
+        let new_meta_path = get_meta_path(&new_path);
         let full_old_path = self.root_path.join(old_meta_path);
         let full_new_path = self.root_path.join(new_meta_path);
         if let Some(parent) = full_new_path.parent() {
@@ -236,19 +236,19 @@ impl AssetWriter for FileAssetWriter {
         Ok(())
     }
 
-    async fn create_directory<'a>(&'a self, path: &'a Path) -> Result<(), AssetWriterError> {
+    async fn create_directory<'a>(&'a self, path: PathBuf) -> Result<(), AssetWriterError> {
         let full_path = self.root_path.join(path);
         async_fs::create_dir_all(full_path).await?;
         Ok(())
     }
 
-    async fn remove_directory<'a>(&'a self, path: &'a Path) -> Result<(), AssetWriterError> {
+    async fn remove_directory<'a>(&'a self, path: PathBuf) -> Result<(), AssetWriterError> {
         let full_path = self.root_path.join(path);
         async_fs::remove_dir_all(full_path).await?;
         Ok(())
     }
 
-    async fn remove_empty_directory<'a>(&'a self, path: &'a Path) -> Result<(), AssetWriterError> {
+    async fn remove_empty_directory<'a>(&'a self, path: PathBuf) -> Result<(), AssetWriterError> {
         let full_path = self.root_path.join(path);
         async_fs::remove_dir(full_path).await?;
         Ok(())
@@ -256,7 +256,7 @@ impl AssetWriter for FileAssetWriter {
 
     async fn remove_assets_in_directory<'a>(
         &'a self,
-        path: &'a Path,
+        path: PathBuf,
     ) -> Result<(), AssetWriterError> {
         let full_path = self.root_path.join(path);
         async_fs::remove_dir_all(&full_path).await?;

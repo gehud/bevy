@@ -1455,7 +1455,10 @@ impl AssetServer {
         let mut meta_reader;
 
         let (meta, loader) = if read_meta {
-            match asset_reader.read_meta(asset_path.path().to_path_buf()).await {
+            match asset_reader
+                .read_meta(asset_path.path().to_path_buf())
+                .await
+            {
                 Ok(new_meta_reader) => {
                     meta_reader = new_meta_reader;
                     let mut meta_bytes = vec![];
@@ -1733,7 +1736,7 @@ impl AssetServer {
 
         let writer = source.writer()?;
         writer
-            .write_meta_bytes(path.path(), &serialized_meta)
+            .write_meta_bytes(path.path().to_path_buf(), &serialized_meta)
             .await?;
 
         Ok(())
