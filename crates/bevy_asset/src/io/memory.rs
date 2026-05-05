@@ -361,41 +361,41 @@ impl Reader for DataReader {
 }
 
 impl AssetReader for MemoryAssetReader {
-    async fn read<'a>(&'a self, path: &'a Path) -> Result<impl Reader + 'a, AssetReaderError> {
+    async fn read<'a>(&'a self, path: PathBuf) -> Result<impl Reader + 'a, AssetReaderError> {
         self.root
-            .get_asset(path)
+            .get_asset(&path)
             .map(|data| DataReader {
                 data,
                 bytes_read: 0,
             })
-            .ok_or_else(|| AssetReaderError::NotFound(path.to_path_buf()))
+            .ok_or_else(|| AssetReaderError::NotFound(path))
     }
 
-    async fn read_meta<'a>(&'a self, path: &'a Path) -> Result<impl Reader + 'a, AssetReaderError> {
+    async fn read_meta<'a>(&'a self, path: PathBuf) -> Result<impl Reader + 'a, AssetReaderError> {
         self.root
-            .get_metadata(path)
+            .get_metadata(&path)
             .map(|data| DataReader {
                 data,
                 bytes_read: 0,
             })
-            .ok_or_else(|| AssetReaderError::NotFound(path.to_path_buf()))
+            .ok_or_else(|| AssetReaderError::NotFound(path))
     }
 
     async fn read_directory<'a>(
         &'a self,
-        path: &'a Path,
+        path: PathBuf,
     ) -> Result<Box<PathStream>, AssetReaderError> {
         self.root
-            .get_dir(path)
+            .get_dir(&path)
             .map(|dir| {
                 let stream: Box<PathStream> = Box::new(DirStream::new(dir));
                 stream
             })
-            .ok_or_else(|| AssetReaderError::NotFound(path.to_path_buf()))
+            .ok_or_else(|| AssetReaderError::NotFound(path))
     }
 
-    async fn is_directory<'a>(&'a self, path: &'a Path) -> Result<bool, AssetReaderError> {
-        Ok(self.root.get_dir(path).is_some())
+    async fn is_directory<'a>(&'a self, path: PathBuf) -> Result<bool, AssetReaderError> {
+        Ok(self.root.get_dir(&path).is_some())
     }
 }
 

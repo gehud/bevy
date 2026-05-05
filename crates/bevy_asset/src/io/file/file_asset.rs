@@ -16,7 +16,7 @@ use core::marker::PhantomData;
 use core::time::Duration;
 #[cfg(not(target_os = "windows"))]
 use futures_util::{future, pin_mut};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use super::{FileAssetReader, FileAssetWriter};
 
@@ -72,7 +72,7 @@ impl<'a> Reader for GuardedFile<'a> {
 }
 
 impl AssetReader for FileAssetReader {
-    async fn read<'a>(&'a self, path: &'a Path) -> Result<impl Reader + 'a, AssetReaderError> {
+    async fn read<'a>(&'a self, path: PathBuf) -> Result<impl Reader + 'a, AssetReaderError> {
         #[cfg(not(target_os = "windows"))]
         let _guard = maybe_get_semaphore().await;
 
@@ -95,11 +95,11 @@ impl AssetReader for FileAssetReader {
             })
     }
 
-    async fn read_meta<'a>(&'a self, path: &'a Path) -> Result<impl Reader + 'a, AssetReaderError> {
+    async fn read_meta<'a>(&'a self, path: PathBuf) -> Result<impl Reader + 'a, AssetReaderError> {
         #[cfg(not(target_os = "windows"))]
         let _guard = maybe_get_semaphore().await;
 
-        let meta_path = get_meta_path(path);
+        let meta_path = get_meta_path(&path);
         let full_path = self.root_path.join(meta_path);
         File::open(&full_path)
             .await
@@ -121,7 +121,7 @@ impl AssetReader for FileAssetReader {
 
     async fn read_directory<'a>(
         &'a self,
-        path: &'a Path,
+        path: PathBuf,
     ) -> Result<Box<PathStream>, AssetReaderError> {
         let full_path = self.root_path.join(path);
         match read_dir(&full_path).await {
@@ -162,11 +162,11 @@ impl AssetReader for FileAssetReader {
         }
     }
 
-    async fn is_directory<'a>(&'a self, path: &'a Path) -> Result<bool, AssetReaderError> {
-        let full_path = self.root_path.join(path);
+    async fn is_directory<'a>(&'a self, path: PathBuf) -> Result<bool, AssetReaderError> {
+        let full_path = self.root_path.join(&path);
         let metadata = full_path
             .metadata()
-            .map_err(|_e| AssetReaderError::NotFound(path.to_owned()))?;
+            .map_err(|_e| AssetReaderError::NotFound(path))?;
         Ok(metadata.file_type().is_dir())
     }
 }
