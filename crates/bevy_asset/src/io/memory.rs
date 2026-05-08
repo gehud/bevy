@@ -361,41 +361,41 @@ impl Reader for DataReader {
 }
 
 impl AssetReader for MemoryAssetReader {
-    async fn read<'a>(&'a self, path: PathBuf) -> Result<impl Reader + 'a, AssetReaderError> {
+    async fn read<'a>(&'a self, path: &'a Path) -> Result<impl Reader + 'a, AssetReaderError> {
         self.root
-            .get_asset(&path)
+            .get_asset(path)
             .map(|data| DataReader {
                 data,
                 bytes_read: 0,
             })
-            .ok_or_else(|| AssetReaderError::NotFound(path))
+            .ok_or_else(|| AssetReaderError::NotFound(path.to_path_buf()))
     }
 
-    async fn read_meta<'a>(&'a self, path: PathBuf) -> Result<impl Reader + 'a, AssetReaderError> {
+    async fn read_meta<'a>(&'a self, path: &'a Path) -> Result<impl Reader + 'a, AssetReaderError> {
         self.root
-            .get_metadata(&path)
+            .get_metadata(path)
             .map(|data| DataReader {
                 data,
                 bytes_read: 0,
             })
-            .ok_or_else(|| AssetReaderError::NotFound(path))
+            .ok_or_else(|| AssetReaderError::NotFound(path.to_path_buf()))
     }
 
     async fn read_directory<'a>(
         &'a self,
-        path: PathBuf,
+        path: &'a Path,
     ) -> Result<Box<PathStream>, AssetReaderError> {
         self.root
-            .get_dir(&path)
+            .get_dir(path)
             .map(|dir| {
                 let stream: Box<PathStream> = Box::new(DirStream::new(dir));
                 stream
             })
-            .ok_or_else(|| AssetReaderError::NotFound(path))
+            .ok_or_else(|| AssetReaderError::NotFound(path.to_path_buf()))
     }
 
-    async fn is_directory<'a>(&'a self, path: PathBuf) -> Result<bool, AssetReaderError> {
-        Ok(self.root.get_dir(&path).is_some())
+    async fn is_directory<'a>(&'a self, path: &'a Path) -> Result<bool, AssetReaderError> {
+        Ok(self.root.get_dir(path).is_some())
     }
 }
 
@@ -446,7 +446,7 @@ impl AsyncWrite for DataWriter {
 }
 
 impl AssetWriter for MemoryAssetWriter {
-    async fn write<'a>(&'a self, path: PathBuf) -> Result<Box<super::Writer>, AssetWriterError> {
+    async fn write<'a>(&'a self, path: &'a Path) -> Result<Box<super::Writer>, AssetWriterError> {
         Ok(Box::new(DataWriter {
             dir: self.root.clone(),
             path: path.to_owned(),
@@ -457,7 +457,7 @@ impl AssetWriter for MemoryAssetWriter {
 
     async fn write_meta<'a>(
         &'a self,
-        path: PathBuf,
+        path: &'a Path,
     ) -> Result<Box<super::Writer>, AssetWriterError> {
         Ok(Box::new(DataWriter {
             dir: self.root.clone(),
@@ -467,8 +467,8 @@ impl AssetWriter for MemoryAssetWriter {
         }))
     }
 
-    async fn remove<'a>(&'a self, path: PathBuf) -> Result<(), AssetWriterError> {
-        if self.root.remove_asset(&path).is_none() {
+    async fn remove<'a>(&'a self, path: &'a Path) -> Result<(), AssetWriterError> {
+        if self.root.remove_asset(path).is_none() {
             return Err(AssetWriterError::Io(Error::new(
                 ErrorKind::NotFound,
                 "no such file",
@@ -477,58 +477,58 @@ impl AssetWriter for MemoryAssetWriter {
         Ok(())
     }
 
-    async fn remove_meta<'a>(&'a self, path: PathBuf) -> Result<(), AssetWriterError> {
-        self.root.remove_metadata(&path);
+    async fn remove_meta<'a>(&'a self, path: &'a Path) -> Result<(), AssetWriterError> {
+        self.root.remove_metadata(path);
         Ok(())
     }
 
     async fn rename<'a>(
         &'a self,
-        old_path: PathBuf,
-        new_path: PathBuf,
+        old_path: &'a Path,
+        new_path: &'a Path,
     ) -> Result<(), AssetWriterError> {
-        let Some(old_asset) = self.root.get_asset(&old_path) else {
+        let Some(old_asset) = self.root.get_asset(old_path) else {
             return Err(AssetWriterError::Io(Error::new(
                 ErrorKind::NotFound,
                 "no such file",
             )));
         };
-        self.root.insert_asset(&new_path, old_asset.value);
+        self.root.insert_asset(new_path, old_asset.value);
         // Remove the asset after instead of before since otherwise there'd be a moment where the
         // Dir is unlocked and missing both the old and new paths. This just prevents race
         // conditions.
-        self.root.remove_asset(&old_path);
+        self.root.remove_asset(old_path);
         Ok(())
     }
 
     async fn rename_meta<'a>(
         &'a self,
-        old_path: PathBuf,
-        new_path: PathBuf,
+        old_path: &'a Path,
+        new_path: &'a Path,
     ) -> Result<(), AssetWriterError> {
-        let Some(old_meta) = self.root.get_metadata(&old_path) else {
+        let Some(old_meta) = self.root.get_metadata(old_path) else {
             return Err(AssetWriterError::Io(Error::new(
                 ErrorKind::NotFound,
                 "no such file",
             )));
         };
-        self.root.insert_meta(&new_path, old_meta.value);
+        self.root.insert_meta(new_path, old_meta.value);
         // Remove the meta after instead of before since otherwise there'd be a moment where the
         // Dir is unlocked and missing both the old and new paths. This just prevents race
         // conditions.
-        self.root.remove_metadata(&old_path);
+        self.root.remove_metadata(old_path);
         Ok(())
     }
 
-    async fn create_directory<'a>(&'a self, path: PathBuf) -> Result<(), AssetWriterError> {
+    async fn create_directory<'a>(&'a self, path: &'a Path) -> Result<(), AssetWriterError> {
         // Just pretend we're on a file system that doesn't consider directory re-creation a
         // failure.
-        self.root.get_or_insert_dir(&path);
+        self.root.get_or_insert_dir(path);
         Ok(())
     }
 
-    async fn remove_directory<'a>(&'a self, path: PathBuf) -> Result<(), AssetWriterError> {
-        if self.root.remove_dir(&path).is_none() {
+    async fn remove_directory<'a>(&'a self, path: &'a Path) -> Result<(), AssetWriterError> {
+        if self.root.remove_dir(path).is_none() {
             return Err(AssetWriterError::Io(Error::new(
                 ErrorKind::NotFound,
                 "no such dir",
@@ -537,8 +537,8 @@ impl AssetWriter for MemoryAssetWriter {
         Ok(())
     }
 
-    async fn remove_empty_directory<'a>(&'a self, path: PathBuf) -> Result<(), AssetWriterError> {
-        let Some(dir) = self.root.get_dir(&path) else {
+    async fn remove_empty_directory<'a>(&'a self, path: &'a Path) -> Result<(), AssetWriterError> {
+        let Some(dir) = self.root.get_dir(path) else {
             return Err(AssetWriterError::Io(Error::new(
                 ErrorKind::NotFound,
                 "no such dir",
@@ -553,15 +553,15 @@ impl AssetWriter for MemoryAssetWriter {
             )));
         }
 
-        self.root.remove_dir(&path);
+        self.root.remove_dir(path);
         Ok(())
     }
 
     async fn remove_assets_in_directory<'a>(
         &'a self,
-        path: PathBuf,
+        path: &'a Path,
     ) -> Result<(), AssetWriterError> {
-        let Some(dir) = self.root.get_dir(&path) else {
+        let Some(dir) = self.root.get_dir(path) else {
             return Err(AssetWriterError::Io(Error::new(
                 ErrorKind::NotFound,
                 "no such dir",

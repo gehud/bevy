@@ -10,7 +10,7 @@ use alloc::{borrow::ToOwned, boxed::Box, sync::Arc, vec::Vec};
 use async_lock::RwLockReadGuardArc;
 use core::{pin::Pin, task::Poll};
 use futures_io::AsyncRead;
-use std::path::PathBuf;
+use std::path::Path;
 use tracing::trace;
 
 use super::ErasedAssetReader;
@@ -41,7 +41,7 @@ impl ProcessorGatedReader {
 }
 
 impl AssetReader for ProcessorGatedReader {
-    async fn read<'a>(&'a self, path: PathBuf) -> Result<impl Reader + 'a, AssetReaderError> {
+    async fn read<'a>(&'a self, path: &'a Path) -> Result<impl Reader + 'a, AssetReaderError> {
         let asset_path = AssetPath::from(path.to_path_buf()).with_source(self.source.clone());
         trace!("Waiting for processing to finish before reading {asset_path}");
         let process_result = self
@@ -64,7 +64,7 @@ impl AssetReader for ProcessorGatedReader {
         Ok(reader)
     }
 
-    async fn read_meta<'a>(&'a self, path: PathBuf) -> Result<impl Reader + 'a, AssetReaderError> {
+    async fn read_meta<'a>(&'a self, path: &'a Path) -> Result<impl Reader + 'a, AssetReaderError> {
         let asset_path = AssetPath::from(path.to_path_buf()).with_source(self.source.clone());
         trace!("Waiting for processing to finish before reading meta for {asset_path}",);
         let process_result = self
@@ -89,7 +89,7 @@ impl AssetReader for ProcessorGatedReader {
 
     async fn read_directory<'a>(
         &'a self,
-        path: PathBuf,
+        path: &'a Path,
     ) -> Result<Box<PathStream>, AssetReaderError> {
         trace!(
             "Waiting for processing to finish before reading directory {:?}",
@@ -101,7 +101,7 @@ impl AssetReader for ProcessorGatedReader {
         Ok(result)
     }
 
-    async fn is_directory<'a>(&'a self, path: PathBuf) -> Result<bool, AssetReaderError> {
+    async fn is_directory<'a>(&'a self, path: &'a Path) -> Result<bool, AssetReaderError> {
         trace!(
             "Waiting for processing to finish before reading directory {:?}",
             path

@@ -16,7 +16,7 @@ use core::marker::PhantomData;
 use futures_lite::AsyncWriteExt;
 use ron::ser::PrettyConfig;
 use serde::{Deserialize, Serialize};
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 use bevy_app::{App, TaskPoolPlugin};
 use bevy_ecs::error::BevyError;
@@ -195,25 +195,25 @@ impl<R: AssetReader> LockGatedReader<R> {
 }
 
 impl<R: AssetReader> AssetReader for LockGatedReader<R> {
-    async fn read<'a>(&'a self, path: PathBuf) -> Result<impl Reader + 'a, AssetReaderError> {
+    async fn read<'a>(&'a self, path: &'a Path) -> Result<impl Reader + 'a, AssetReaderError> {
         let _guard = self.gate.read().await;
         self.reader.read(path).await
     }
 
-    async fn read_meta<'a>(&'a self, path: PathBuf) -> Result<impl Reader + 'a, AssetReaderError> {
+    async fn read_meta<'a>(&'a self, path: &'a Path) -> Result<impl Reader + 'a, AssetReaderError> {
         let _guard = self.gate.read().await;
         self.reader.read_meta(path).await
     }
 
     async fn read_directory<'a>(
         &'a self,
-        path: PathBuf,
+        path: &'a Path,
     ) -> Result<Box<PathStream>, AssetReaderError> {
         let _guard = self.gate.read().await;
         self.reader.read_directory(path).await
     }
 
-    async fn is_directory<'a>(&'a self, path: PathBuf) -> Result<bool, AssetReaderError> {
+    async fn is_directory<'a>(&'a self, path: &'a Path) -> Result<bool, AssetReaderError> {
         let _guard = self.gate.read().await;
         self.reader.is_directory(path).await
     }

@@ -759,9 +759,9 @@ pub mod __macro_exports {
             feature = "auto_register_inventory"
         ))]
         mod __automatic_type_registration_impl {
-            pub use inventory;
+            use super::*;
 
-            use crate::TypeRegistry;
+            pub use inventory;
 
             /// Stores type registration functions
             pub struct AutomaticReflectRegistrations(pub fn(&mut TypeRegistry));

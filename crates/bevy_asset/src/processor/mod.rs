@@ -455,7 +455,7 @@ impl AssetProcessor {
         // file for the unprocessed version of that asset (so it will be processed by the default
         // processor).
         let reader = source.reader();
-        match reader.read_meta_bytes(path.path().to_path_buf()).await {
+        match reader.read_meta_bytes(path.path()).await {
             Ok(_) => return Err(WriteDefaultMetaError::MetaAlreadyExists),
             Err(AssetReaderError::NotFound(_)) => {
                 // The meta file couldn't be found so just fall through.
@@ -470,7 +470,7 @@ impl AssetProcessor {
 
         let writer = source.writer()?;
         writer
-            .write_meta_bytes(path.path().to_path_buf(), &serialized_meta)
+            .write_meta_bytes(path.path(), &serialized_meta)
             .await?;
 
         Ok(())
@@ -544,7 +544,7 @@ impl AssetProcessor {
             }
             AssetSourceEvent::RemovedUnknown { path, is_meta } => {
                 let processed_reader = source.ungated_processed_reader().unwrap();
-                match processed_reader.is_directory(path.clone()).await {
+                match processed_reader.is_directory(&path).await {
                     Ok(is_directory) => {
                         if is_directory {
                             self.handle_removed_folder(source, &path).await;
@@ -621,7 +621,7 @@ impl AssetProcessor {
             path.display()
         );
         let processed_reader = source.ungated_processed_reader().unwrap();
-        match processed_reader.read_directory(path.to_path_buf()).await {
+        match processed_reader.read_directory(path).await {
             Ok(mut path_stream) => {
                 while let Some(child_path) = path_stream.next().await {
                     self.handle_removed_asset(source, child_path).await;
@@ -648,7 +648,7 @@ impl AssetProcessor {
             },
         }
         let processed_writer = source.processed_writer().unwrap();
-        if let Err(err) = processed_writer.remove_directory(path.to_path_buf()).await {
+        if let Err(err) = processed_writer.remove_directory(path).await {
             match err {
                 AssetWriterError::Io(err) => {
                     // we can ignore NotFound because if the "final" file in a folder was removed
@@ -708,11 +708,11 @@ impl AssetProcessor {
         let _old_write_lock = old_lock.write();
         let _new_write_lock = new_lock.write();
         processed_writer
-            .rename(old.path().to_path_buf(), new.path().to_path_buf())
+            .rename(old.path(), new.path())
             .await
             .unwrap();
         processed_writer
-            .rename_meta(old.path().to_path_buf(), new.path().to_path_buf())
+            .rename_meta(old.path(), new.path())
             .await
             .unwrap();
     }
@@ -723,8 +723,8 @@ impl AssetProcessor {
         path: PathBuf,
         new_task_sender: &async_channel::Sender<(AssetSourceId<'static>, PathBuf)>,
     ) -> Result<(), AssetReaderError> {
-        if source.reader().is_directory(path.clone()).await? {
-            let mut path_stream = source.reader().read_directory(path).await?;
+        if source.reader().is_directory(&path).await? {
+            let mut path_stream = source.reader().read_directory(&path).await?;
             while let Some(path) = path_stream.next().await {
                 Box::pin(self.queue_processing_tasks_for_folder(source, path, new_task_sender))
                     .await?;
@@ -841,8 +841,8 @@ impl AssetProcessor {
             paths: &mut Vec<PathBuf>,
             mut empty_dirs: Option<&mut Vec<PathBuf>>,
         ) -> Result<bool, AssetReaderError> {
-            if reader.is_directory(path.clone()).await? {
-                let mut path_stream = reader.read_directory(path.clone()).await?;
+            if reader.is_directory(&path).await? {
+                let mut path_stream = reader.read_directory(&path).await?;
                 let mut contains_files = false;
 
                 while let Some(child_path) = path_stream.next().await {
@@ -902,7 +902,7 @@ impl AssetProcessor {
             // (we're modifying a collection while iterating through it).
             for empty_dir in empty_dirs {
                 // We don't care if this succeeds, since it's just a cleanup task. It is best-effort
-                let _ = processed_writer.remove_empty_directory(empty_dir).await;
+                let _ = processed_writer.remove_empty_directory(&empty_dir).await;
             }
 
             for path in unprocessed_paths {
@@ -913,10 +913,7 @@ impl AssetProcessor {
                 let mut dependencies = Vec::new();
                 let asset_path = AssetPath::from(path).with_source(source.id());
                 if let Some(info) = asset_infos.get_mut(&asset_path) {
-                    match processed_reader
-                        .read_meta_bytes(asset_path.path().to_path_buf())
-                        .await
-                    {
+                    match processed_reader.read_meta_bytes(asset_path.path()).await {
                         Ok(meta_bytes) => {
                             match ron::de::from_bytes::<ProcessedInfoMinimal>(&meta_bytes) {
                                 Ok(minimal) => {
@@ -970,21 +967,11 @@ impl AssetProcessor {
     /// Removes the processed version of an asset and its metadata, if it exists. This _is not_ transactional like `remove_processed_asset_transactional`, nor
     /// does it remove existing in-memory metadata.
     async fn remove_processed_asset_and_meta(&self, source: &AssetSource, path: &Path) {
-        if let Err(err) = source
-            .processed_writer()
-            .unwrap()
-            .remove(path.to_path_buf())
-            .await
-        {
+        if let Err(err) = source.processed_writer().unwrap().remove(path).await {
             warn!("Failed to remove non-existent asset {path:?}: {err}");
         }
 
-        if let Err(err) = source
-            .processed_writer()
-            .unwrap()
-            .remove_meta(path.to_path_buf())
-            .await
-        {
+        if let Err(err) = source.processed_writer().unwrap().remove_meta(path).await {
             warn!("Failed to remove non-existent meta {path:?}: {err}");
         }
 
@@ -1005,7 +992,7 @@ impl AssetProcessor {
             if source
                 .processed_writer()
                 .unwrap()
-                .remove_empty_directory(parent.to_path_buf())
+                .remove_empty_directory(parent)
                 .await
                 .is_err()
             {
@@ -1056,10 +1043,7 @@ impl AssetProcessor {
             err,
         };
 
-        let (mut source_meta, meta_bytes, processor) = match reader
-            .read_meta_bytes(path.to_path_buf())
-            .await
-        {
+        let (mut source_meta, meta_bytes, processor) = match reader.read_meta_bytes(path).await {
             Ok(meta_bytes) => {
                 let minimal: AssetMetaMinimal = ron::de::from_bytes(&meta_bytes).map_err(|e| {
                     ProcessError::DeserializeMetaError(DeserializeMetaError::DeserializeMinimal(e))
@@ -1114,7 +1098,7 @@ impl AssetProcessor {
         let new_hash = {
             // Create a reader just for computing the hash. Keep this scoped here so that we drop it
             // as soon as the hash is computed.
-            let mut reader_for_hash = reader.read(path.to_path_buf()).await.map_err(reader_err)?;
+            let mut reader_for_hash = reader.read(path).await.map_err(reader_err)?;
 
             get_asset_hash(&meta_bytes, &mut reader_for_hash)
                 .await
@@ -1182,12 +1166,9 @@ impl AssetProcessor {
             // it's not likely to be too big a deal. If in the future, we decide we want to avoid
             // this repeated read, we could "ask" the asset source if it prefers avoiding repeated
             // reads or not.
-            let reader_for_process = reader.read(path.to_path_buf()).await.map_err(reader_err)?;
+            let reader_for_process = reader.read(path).await.map_err(reader_err)?;
 
-            let mut writer = processed_writer
-                .write(path.to_path_buf())
-                .await
-                .map_err(writer_err)?;
+            let mut writer = processed_writer.write(path).await.map_err(writer_err)?;
             let mut processed_meta = {
                 let mut context = ProcessContext::new(
                     self,
@@ -1220,16 +1201,13 @@ impl AssetProcessor {
             let meta_bytes = processed_meta.serialize();
 
             processed_writer
-                .write_meta_bytes(path.to_path_buf(), &meta_bytes)
+                .write_meta_bytes(path, &meta_bytes)
                 .await
                 .map_err(writer_err)?;
         } else {
             // See the reasoning for processing why it's ok to do a second read here.
-            let mut reader_for_copy = reader.read(path.to_path_buf()).await.map_err(reader_err)?;
-            let mut writer = processed_writer
-                .write(path.to_path_buf())
-                .await
-                .map_err(writer_err)?;
+            let mut reader_for_copy = reader.read(path).await.map_err(reader_err)?;
+            let mut writer = processed_writer.write(path).await.map_err(writer_err)?;
             futures_lite::io::copy(&mut reader_for_copy, &mut writer)
                 .await
                 .map_err(|err| ProcessError::AssetWriterError {
@@ -1239,7 +1217,7 @@ impl AssetProcessor {
             *source_meta.processed_info_mut() = Some(new_processed_info.clone());
             let meta_bytes = source_meta.serialize();
             processed_writer
-                .write_meta_bytes(path.to_path_buf(), &meta_bytes)
+                .write_meta_bytes(path, &meta_bytes)
                 .await
                 .map_err(writer_err)?;
         }
@@ -1293,9 +1271,7 @@ impl AssetProcessor {
                                     continue;
                                 };
 
-                                if let Err(err) =
-                                    processed_writer.remove(path.path().to_path_buf()).await
-                                {
+                                if let Err(err) = processed_writer.remove(path.path()).await {
                                     match err {
                                         AssetWriterError::Io(err) => {
                                             // any error but NotFound means we could be in a bad state
@@ -1305,10 +1281,7 @@ impl AssetProcessor {
                                         }
                                     }
                                 }
-                                if let Err(err) = processed_writer
-                                    .remove_meta(path.path().to_path_buf())
-                                    .await
-                                {
+                                if let Err(err) = processed_writer.remove_meta(path.path()).await {
                                     match err {
                                         AssetWriterError::Io(err) => {
                                             // any error but NotFound means we could be in a bad state
@@ -1332,7 +1305,7 @@ impl AssetProcessor {
                         continue;
                     };
                     if let Err(err) = processed_writer
-                        .remove_assets_in_directory(PathBuf::from(""))
+                        .remove_assets_in_directory(Path::new(""))
                         .await
                     {
                         panic!("Processed assets were in a bad state. To correct this, the asset processor attempted to remove all processed assets and start from scratch. This failed. There is no way to continue. Try restarting, or deleting imported asset folder manually. {err}");

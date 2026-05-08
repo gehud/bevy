@@ -1068,11 +1068,11 @@ impl AssetServer {
             server: &'a AssetServer,
             handles: &'a mut Vec<UntypedHandle>,
         ) -> Result<(), AssetLoadError> {
-            let is_dir = reader.is_directory(path.to_path_buf()).await?;
+            let is_dir = reader.is_directory(path).await?;
             if is_dir {
-                let mut path_stream = reader.read_directory(path.to_path_buf()).await?;
+                let mut path_stream = reader.read_directory(path.as_ref()).await?;
                 while let Some(child_path) = path_stream.next().await {
-                    if reader.is_directory(child_path.clone()).await? {
+                    if reader.is_directory(&child_path).await? {
                         Box::pin(load_folder(
                             source.clone(),
                             &child_path,
@@ -1455,10 +1455,7 @@ impl AssetServer {
         let mut meta_reader;
 
         let (meta, loader) = if read_meta {
-            match asset_reader
-                .read_meta(asset_path.path().to_path_buf())
-                .await
-            {
+            match asset_reader.read_meta(asset_path.path()).await {
                 Ok(new_meta_reader) => {
                     meta_reader = new_meta_reader;
                     let mut meta_bytes = vec![];
@@ -1536,7 +1533,7 @@ impl AssetServer {
             let meta = loader.default_meta();
             (meta, loader)
         };
-        let reader = asset_reader.read(asset_path.path().to_path_buf()).await?;
+        let reader = asset_reader.read(asset_path.path()).await?;
         Ok((meta, loader, reader))
     }
 
@@ -1721,7 +1718,7 @@ impl AssetServer {
         let source = self.get_source(path.source())?;
 
         let reader = source.reader();
-        match reader.read_meta_bytes(path.path().to_path_buf()).await {
+        match reader.read_meta_bytes(path.path()).await {
             Ok(_) => return Err(WriteDefaultMetaError::MetaAlreadyExists),
             Err(AssetReaderError::NotFound(_)) => {
                 // The meta file couldn't be found so just fall through.
@@ -1736,7 +1733,7 @@ impl AssetServer {
 
         let writer = source.writer()?;
         writer
-            .write_meta_bytes(path.path().to_path_buf(), &serialized_meta)
+            .write_meta_bytes(path.path(), &serialized_meta)
             .await?;
 
         Ok(())
