@@ -20,7 +20,7 @@ pub trait AssetSaver: TypePath + Send + Sync + 'static {
     /// The top level [`Asset`] saved by this [`AssetSaver`].
     type Asset: Asset;
     /// The settings type used by this [`AssetSaver`].
-    type Settings: Settings + Reflectable + FromReflect + Default + Serialize + for<'a> Deserialize<'a>;
+    type Settings: Settings + Reflectable + FromReflect + Clone + Default + Serialize + for<'a> Deserialize<'a>;
     /// The type of [`AssetLoader`] used to load this [`Asset`]
     type OutputLoader: AssetLoader;
     /// The type of [error](`std::error::Error`) which could be encountered by this saver.

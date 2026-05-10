@@ -2465,7 +2465,7 @@ mod tests {
         #[derive(Asset, TypePath)]
         struct U8Asset(u8);
 
-        #[derive(Serialize, Deserialize, Default, Reflect)]
+        #[derive(Serialize, Deserialize, Default, Clone, Reflect)]
         struct U8LoaderSettings(u8);
 
         #[derive(TypePath)]

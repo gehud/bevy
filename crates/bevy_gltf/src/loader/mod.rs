@@ -175,8 +175,8 @@ pub struct GltfLoader {
 ///     }
 /// );
 /// ```
-#[derive(Serialize, Deserialize, Reflect)]
-#[reflect(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, Reflect)]
+#[reflect(Serialize, Deserialize, Clone)]
 pub struct GltfLoaderSettings {
     /// If empty, the gltf mesh nodes will be skipped.
     ///

@@ -351,8 +351,8 @@ pub enum ShaderLoaderError {
 }
 
 /// Settings for loading shaders.
-#[derive(serde::Serialize, serde::Deserialize, Debug, Default, Reflect)]
-#[reflect(Serialize, Deserialize, Debug, Default)]
+#[derive(serde::Serialize, serde::Deserialize, Clone, Debug, Default, Reflect)]
+#[reflect(Serialize, Deserialize, Clone, Debug, Default)]
 pub struct ShaderSettings {
     /// The `#define` specified for this shader.
     pub shader_defs: Vec<ShaderDefVal>,

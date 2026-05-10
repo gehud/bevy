@@ -132,6 +132,8 @@ pub trait AssetMetaDyn: Any + Send + Sync {
     fn loader_settings(&self) -> Option<&dyn Settings>;
     /// Returns a mutable reference to the [`AssetLoader`] settings, if they exist.
     fn loader_settings_mut(&mut self) -> Option<&mut dyn Settings>;
+    /// Returns a clone of the [`AssetLoader`] settings, if they exist.
+    fn clone_loader_settings(&self) -> Option<Box<dyn Settings>>;
     /// Returns a reference to the [`Process`] settings, if they exist.
     fn process_settings(&self) -> Option<&dyn Settings>;
     /// Serializes the internal [`AssetMeta`].
@@ -153,6 +155,13 @@ impl<L: AssetLoader, P: Process> AssetMetaDyn for AssetMeta<L, P> {
     fn loader_settings_mut(&mut self) -> Option<&mut dyn Settings> {
         if let AssetAction::Load { settings, .. } = &mut self.asset {
             Some(settings)
+        } else {
+            None
+        }
+    }
+    fn clone_loader_settings(&self) -> Option<Box<dyn Settings>> {
+        if let AssetAction::Load { settings, .. } = &self.asset {
+            Some(Box::new(settings.clone()))
         } else {
             None
         }
