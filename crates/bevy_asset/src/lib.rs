@@ -739,7 +739,7 @@ mod tests {
         collections::{HashMap, HashSet},
         sync::Mutex,
     };
-    use bevy_reflect::TypePath;
+    use bevy_reflect::{Reflect, TypePath};
     use core::time::Duration;
     use futures_lite::AsyncReadExt;
     use serde::{Deserialize, Serialize};
@@ -2465,7 +2465,7 @@ mod tests {
         #[derive(Asset, TypePath)]
         struct U8Asset(u8);
 
-        #[derive(Serialize, Deserialize, Default)]
+        #[derive(Serialize, Deserialize, Default, Reflect)]
         struct U8LoaderSettings(u8);
 
         #[derive(TypePath)]

@@ -1,7 +1,7 @@
 use super::ShaderDefVal;
 use alloc::borrow::Cow;
 use bevy_asset::{io::Reader, Asset, AssetLoader, AssetPath, Handle, LoadContext};
-use bevy_reflect::TypePath;
+use bevy_reflect::{Reflect, ReflectDeserialize, ReflectSerialize, TypePath, std_traits::ReflectDefault};
 use core::{marker::Copy, num::NonZero};
 use thiserror::Error;
 
@@ -351,7 +351,8 @@ pub enum ShaderLoaderError {
 }
 
 /// Settings for loading shaders.
-#[derive(serde::Serialize, serde::Deserialize, Debug, Default)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Default, Reflect)]
+#[reflect(Serialize, Deserialize, Debug, Default)]
 pub struct ShaderSettings {
     /// The `#define` specified for this shader.
     pub shader_defs: Vec<ShaderDefVal>,

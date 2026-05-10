@@ -2,6 +2,7 @@ use crate::shader::*;
 use alloc::sync::Arc;
 use bevy_asset::AssetId;
 use bevy_platform::collections::{hash_map::EntryRef, HashMap, HashSet};
+use bevy_reflect::{Reflect, ReflectDeserialize, ReflectSerialize};
 use core::hash::Hash;
 use naga::valid::Capabilities;
 use thiserror::Error;
@@ -72,7 +73,8 @@ pub struct ShaderCache<ShaderModule, RenderDevice> {
     pub composer: naga_oil::compose::Composer,
 }
 
-#[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Eq, Debug, Hash)]
+#[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Eq, Debug, Hash, Reflect)]
+#[reflect(Serialize, Deserialize, Clone, PartialEq, Debug, Hash)]
 pub enum ShaderDefVal {
     Bool(String, bool),
     Int(String, i32),

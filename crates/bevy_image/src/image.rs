@@ -11,6 +11,7 @@ use bevy_app::{App, Plugin};
 use bevy_reflect::TypePath;
 #[cfg(feature = "bevy_reflect")]
 use bevy_reflect::{std_traits::ReflectDefault, Reflect};
+use bevy_reflect::{ReflectDeserialize, ReflectSerialize};
 
 use bevy_asset::{uuid_handle, Asset, AssetApp, Assets, Handle, RenderAssetUsages};
 use bevy_color::{Color, ColorToComponents, Gray, LinearRgba, Srgba, Xyza};
@@ -243,7 +244,8 @@ impl Plugin for ImagePlugin {
 pub const TEXTURE_ASSET_INDEX: u64 = 0;
 pub const SAMPLER_ASSET_INDEX: u64 = 1;
 
-#[derive(Debug, Serialize, Deserialize, Copy, Clone)]
+#[derive(Debug, Serialize, Deserialize, Copy, Clone, Reflect)]
+#[reflect(Debug, Serialize, Deserialize, Clone)]
 pub enum ImageFormat {
     #[cfg(feature = "basis-universal")]
     Basis,
@@ -614,7 +616,8 @@ pub struct Image {
 /// Used in [`Image`], this determines what image sampler to use when rendering. The default setting,
 /// [`ImageSampler::Default`], will read the sampler from the `ImagePlugin` at setup.
 /// Setting this to [`ImageSampler::Descriptor`] will override the global default descriptor for this [`Image`].
-#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize, Reflect)]
+#[reflect(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub enum ImageSampler {
     /// Default image sampler, derived from the `ImagePlugin` setup.
     #[default]
@@ -659,7 +662,8 @@ impl ImageSampler {
 /// See [`ImageSamplerDescriptor`] for information how to configure this.
 ///
 /// This type mirrors [`AddressMode`].
-#[derive(Clone, Copy, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Serialize, Deserialize, Reflect)]
+#[reflect(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 pub enum ImageAddressMode {
     /// Clamp the value to the edge of the texture.
     ///
@@ -688,7 +692,8 @@ pub enum ImageAddressMode {
 /// Texel mixing mode when sampling between texels.
 ///
 /// This type mirrors [`FilterMode`].
-#[derive(Clone, Copy, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Serialize, Deserialize, Reflect)]
+#[reflect(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 pub enum ImageFilterMode {
     /// Nearest neighbor sampling.
     ///
@@ -704,7 +709,8 @@ pub enum ImageFilterMode {
 /// Comparison function used for depth and stencil operations.
 ///
 /// This type mirrors [`CompareFunction`].
-#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize, Reflect)]
+#[reflect(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub enum ImageCompareFunction {
     /// Function never passes
     Never,
@@ -731,7 +737,8 @@ pub enum ImageCompareFunction {
 /// Color variation to use when the sampler addressing mode is [`ImageAddressMode::ClampToBorder`].
 ///
 /// This type mirrors [`SamplerBorderColor`].
-#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize, Reflect)]
+#[reflect(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub enum ImageSamplerBorderColor {
     /// RGBA color `[0, 0, 0, 0]`.
     TransparentBlack,
@@ -754,7 +761,8 @@ pub enum ImageSamplerBorderColor {
 /// a breaking change.
 ///
 /// This types mirrors [`SamplerDescriptor`], but that might change in future versions.
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Reflect)]
+#[reflect(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ImageSamplerDescriptor {
     pub label: Option<String>,
     /// How to deal with out of bounds accesses in the u (i.e. x) direction.

@@ -3,7 +3,7 @@ use crate::{
     TextureReinterpretationError,
 };
 use bevy_asset::{io::Reader, AssetLoader, LoadContext, RenderAssetUsages};
-use bevy_reflect::TypePath;
+use bevy_reflect::{Reflect, ReflectDeserialize, ReflectSerialize, TypePath, std_traits::ReflectDefault};
 use thiserror::Error;
 
 use super::{CompressedImageFormats, ImageSampler};
@@ -86,7 +86,8 @@ impl ImageLoader {
 }
 
 /// How to determine an image's format when loading.
-#[derive(Serialize, Deserialize, Default, Debug, Clone)]
+#[derive(Serialize, Deserialize, Default, Debug, Clone, Reflect)]
+#[reflect(Serialize, Deserialize, Default, Debug, Clone)]
 pub enum ImageFormatSetting {
     /// Determine the image format from its file extension.
     ///
@@ -101,7 +102,8 @@ pub enum ImageFormatSetting {
 }
 
 /// How to interpret the image as an array of textures.
-#[derive(Serialize, Deserialize, Debug, Clone, Copy)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, Reflect)]
+#[reflect(Serialize, Deserialize, Debug, Clone)]
 pub enum ImageArrayLayout {
     /// Interpret the image as a vertical stack of *n* images.
     RowCount { rows: u32 },
@@ -110,7 +112,8 @@ pub enum ImageArrayLayout {
 }
 
 /// Settings for loading an [`Image`] using an [`ImageLoader`].
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Reflect)]
+#[reflect(Serialize, Deserialize, Default, Debug, Clone)]
 pub struct ImageLoaderSettings {
     /// How to determine the image's container format.
     pub format: ImageFormatSetting,

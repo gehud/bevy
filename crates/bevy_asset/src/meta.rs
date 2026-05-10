@@ -1,8 +1,11 @@
+use core::any::Any;
+
 use alloc::{
     boxed::Box,
     string::{String, ToString},
     vec::Vec,
 };
+use bevy_reflect::Reflect;
 use futures_lite::AsyncReadExt;
 
 use crate::{
@@ -11,7 +14,6 @@ use crate::{
     processor::Process,
     Asset, AssetPath, DeserializeMetaError, VisitAssetDependencies,
 };
-use downcast_rs::{impl_downcast, Downcast};
 use ron::ser::PrettyConfig;
 use serde::{Deserialize, Serialize};
 use tracing::error;
@@ -125,7 +127,7 @@ pub struct ProcessedInfoMinimal {
 
 /// A dynamic type-erased counterpart to [`AssetMeta`] that enables passing around and interacting with [`AssetMeta`] without knowing
 /// its type.
-pub trait AssetMetaDyn: Downcast + Send + Sync {
+pub trait AssetMetaDyn: Any + Send + Sync {
     /// Returns a reference to the [`AssetLoader`] settings, if they exist.
     fn loader_settings(&self) -> Option<&dyn Settings>;
     /// Returns a mutable reference to the [`AssetLoader`] settings, if they exist.
@@ -175,16 +177,12 @@ impl<L: AssetLoader, P: Process> AssetMetaDyn for AssetMeta<L, P> {
     }
 }
 
-impl_downcast!(AssetMetaDyn);
-
 /// Settings used by the asset system, such as by [`AssetLoader`], [`Process`], and [`AssetSaver`]
 ///
 /// [`AssetSaver`]: crate::saver::AssetSaver
-pub trait Settings: Downcast + Send + Sync + 'static {}
+pub trait Settings: Reflect + Send + Sync + 'static {}
 
-impl<T: 'static> Settings for T where T: Send + Sync {}
-
-impl_downcast!(Settings);
+impl<T> Settings for T where T: Reflect + Send + Sync + 'static {}
 
 /// The () processor should never be called. This implementation exists to make the meta format nicer to work with.
 impl Process for () {
@@ -233,7 +231,7 @@ pub(crate) fn meta_transform_settings<S: Settings>(
     settings: &(impl Fn(&mut S) + Send + Sync + 'static),
 ) {
     if let Some(loader_settings) = meta.loader_settings_mut() {
-        if let Some(loader_settings) = loader_settings.downcast_mut::<S>() {
+        if let Some(loader_settings) = loader_settings.as_any_mut().downcast_mut::<S>() {
             settings(loader_settings);
         } else {
             error!(

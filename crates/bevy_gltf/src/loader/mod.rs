@@ -35,7 +35,7 @@ use bevy_mesh::{
 use bevy_pbr::UvChannel;
 use bevy_pbr::{MeshMaterial3d, StandardMaterial, MAX_JOINTS};
 use bevy_platform::collections::{HashMap, HashSet};
-use bevy_reflect::TypePath;
+use bevy_reflect::{Reflect, ReflectDeserialize, ReflectSerialize, TypePath};
 use bevy_render::render_resource::Face;
 use bevy_scene::Scene;
 #[cfg(not(target_arch = "wasm32"))]
@@ -175,7 +175,8 @@ pub struct GltfLoader {
 ///     }
 /// );
 /// ```
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Reflect)]
+#[reflect(Serialize, Deserialize)]
 pub struct GltfLoaderSettings {
     /// If empty, the gltf mesh nodes will be skipped.
     ///

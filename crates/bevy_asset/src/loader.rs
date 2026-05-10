@@ -14,7 +14,7 @@ use alloc::{
 use atomicow::CowArc;
 use bevy_ecs::{error::BevyError, world::World};
 use bevy_platform::collections::{HashMap, HashSet};
-use bevy_reflect::TypePath;
+use bevy_reflect::{FromReflect, Reflectable, TypePath};
 use bevy_tasks::{BoxedFuture, ConditionalSendFuture};
 use core::any::{Any, TypeId};
 use downcast_rs::{impl_downcast, Downcast};
@@ -33,7 +33,7 @@ pub trait AssetLoader: TypePath + Send + Sync + 'static {
     /// The top level [`Asset`] loaded by this [`AssetLoader`].
     type Asset: Asset;
     /// The settings type used by this [`AssetLoader`].
-    type Settings: Settings + Default + Serialize + for<'a> Deserialize<'a>;
+    type Settings: Settings + Reflectable + FromReflect + Default + Serialize + for<'a> Deserialize<'a>;
     /// The type of [error](`std::error::Error`) which could be encountered by this loader.
     type Error: Into<BevyError>;
     /// Asynchronously loads [`AssetLoader::Asset`] (and any other labeled assets) from the bytes provided by [`Reader`].
@@ -90,6 +90,7 @@ where
     ) -> BoxedFuture<'a, Result<ErasedLoadedAsset, BevyError>> {
         Box::pin(async move {
             let settings = settings
+                .as_any()
                 .downcast_ref::<L::Settings>()
                 .expect("AssetLoader settings should match the loader type");
             let asset = <L as AssetLoader>::load(self, reader, settings, &mut load_context)

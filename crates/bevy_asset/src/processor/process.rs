@@ -16,7 +16,9 @@ use alloc::{
     string::{String, ToString},
     vec::Vec,
 };
-use bevy_reflect::TypePath;
+use bevy_reflect::{
+    Reflect, ReflectDeserialize, ReflectSerialize, TypePath, std_traits::ReflectDefault
+};
 use bevy_tasks::{BoxedFuture, ConditionalSendFuture};
 use core::marker::PhantomData;
 use serde::{Deserialize, Serialize};
@@ -88,8 +90,14 @@ impl<L: AssetLoader, S: AssetSaver<Asset = L::Asset>> From<S>
 ///
 /// `LoaderSettings` corresponds to [`AssetLoader::Settings`], `TransformerSettings` corresponds to [`AssetTransformer::Settings`],
 /// and `SaverSettings` corresponds to [`AssetSaver::Settings`].
-#[derive(Serialize, Deserialize, Default)]
-pub struct LoadTransformAndSaveSettings<LoaderSettings, TransformerSettings, SaverSettings> {
+#[derive(Serialize, Deserialize, Default, Reflect)]
+#[reflect(Serialize, Deserialize, Default)]
+#[reflect(where 
+    LoaderSettings: Serialize + for<'a> Deserialize<'a> + Default + Reflect, 
+    TransformerSettings: Serialize + for<'a> Deserialize<'a> + Default + Reflect, 
+    SaverSettings: Serialize + for<'a> Deserialize<'a> + Default + Reflect
+)]
+pub struct LoadTransformAndSaveSettings<LoaderSettings, TransformerSettings, SaverSettings>  {
     /// The [`AssetLoader::Settings`] for [`LoadTransformAndSave`].
     pub loader_settings: LoaderSettings,
     /// The [`AssetTransformer::Settings`] for [`LoadTransformAndSave`].
@@ -234,7 +242,10 @@ impl<P: Process> ErasedProcessor for P {
         writer: &'a mut Writer,
     ) -> BoxedFuture<'a, Result<Box<dyn AssetMetaDyn>, ProcessError>> {
         Box::pin(async move {
-            let settings = settings.downcast_ref().ok_or(ProcessError::WrongMetaType)?;
+            let settings = settings
+                .as_any()
+                .downcast_ref()
+                .ok_or(ProcessError::WrongMetaType)?;
             let loader_settings = <P as Process>::process(self, context, settings, writer).await?;
             let output_meta: Box<dyn AssetMetaDyn> =
                 Box::new(AssetMeta::<P::OutputLoader, ()>::new(AssetAction::Load {

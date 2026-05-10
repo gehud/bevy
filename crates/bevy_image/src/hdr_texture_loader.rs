@@ -1,7 +1,8 @@
 use crate::{Image, TextureAccessError, TextureFormatPixelInfo};
 use bevy_asset::RenderAssetUsages;
 use bevy_asset::{io::Reader, AssetLoader, LoadContext};
-use bevy_reflect::TypePath;
+use bevy_reflect::std_traits::ReflectDefault;
+use bevy_reflect::{Reflect, ReflectDeserialize, ReflectSerialize, TypePath};
 use image::DynamicImage;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
@@ -11,7 +12,8 @@ use wgpu_types::{Extent3d, TextureDimension, TextureFormat};
 #[derive(Clone, Default, TypePath)]
 pub struct HdrTextureLoader;
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, Reflect)]
+#[reflect(Serialize, Deserialize, Default, Debug)]
 pub struct HdrTextureLoaderSettings {
     pub asset_usage: RenderAssetUsages,
 }

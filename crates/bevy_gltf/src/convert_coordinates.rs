@@ -1,5 +1,6 @@
 //! Utilities for converting from glTF's [standard coordinate system](https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#coordinate-system-and-units)
 //! to Bevy's.
+use bevy_reflect::{Reflect, ReflectDeserialize, ReflectSerialize, std_traits::ReflectDefault};
 use serde::{Deserialize, Serialize};
 
 use bevy_math::{Mat4, Quat, Vec3};
@@ -60,7 +61,8 @@ impl ConvertCoordinates for [f32; 4] {
 /// Other entities in the scene are not converted, so their forward may not
 /// match `Transform::forward`. In particular, the entities that correspond to
 /// glTF nodes are not converted.
-#[derive(Copy, Clone, Default, Debug, Serialize, Deserialize)]
+#[derive(Copy, Clone, Default, Debug, Serialize, Deserialize, Reflect)]
+#[reflect(Clone, Default, Debug, Serialize, Deserialize)]
 pub struct GltfConvertCoordinates {
     /// If true, convert scenes by rotating the top-level transform of the scene entity.
     /// This will ensure that [`Transform::forward`] of the "root" entity (the one with [`SceneInstance`](bevy_scene::SceneInstance))

@@ -5,7 +5,7 @@ use crate::{
 use alloc::boxed::Box;
 use atomicow::CowArc;
 use bevy_platform::collections::HashMap;
-use bevy_reflect::TypePath;
+use bevy_reflect::{FromReflect, Reflectable, TypePath};
 use bevy_tasks::{BoxedFuture, ConditionalSendFuture};
 use core::{borrow::Borrow, hash::Hash, ops::Deref};
 use serde::{Deserialize, Serialize};
@@ -20,7 +20,7 @@ pub trait AssetSaver: TypePath + Send + Sync + 'static {
     /// The top level [`Asset`] saved by this [`AssetSaver`].
     type Asset: Asset;
     /// The settings type used by this [`AssetSaver`].
-    type Settings: Settings + Default + Serialize + for<'a> Deserialize<'a>;
+    type Settings: Settings + Reflectable + FromReflect + Default + Serialize + for<'a> Deserialize<'a>;
     /// The type of [`AssetLoader`] used to load this [`Asset`]
     type OutputLoader: AssetLoader;
     /// The type of [error](`std::error::Error`) which could be encountered by this saver.
@@ -62,6 +62,7 @@ impl<S: AssetSaver> ErasedAssetSaver for S {
     ) -> BoxedFuture<'a, Result<(), Box<dyn core::error::Error + Send + Sync + 'static>>> {
         Box::pin(async move {
             let settings = settings
+                .as_any()
                 .downcast_ref::<S::Settings>()
                 .expect("AssetLoader settings should match the loader type");
             let saved_asset = SavedAsset::<S::Asset>::from_loaded(asset).unwrap();
