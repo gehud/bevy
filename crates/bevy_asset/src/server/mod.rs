@@ -708,7 +708,7 @@ impl AssetServer {
         path: impl Into<AssetPath<'a>>,
         settngs: Box<dyn Settings>,
     ) -> Handle<LoadedUntypedAsset> {
-        self.load_with_meta_transform(
+        self.load_unknown_type_with_meta_transform(
             path,
             Some(Box::new(move |meta| {
                 if let Some(loader_settings) = meta.loader_settings_mut() {
@@ -722,8 +722,6 @@ impl AssetServer {
                     }
                 }
             })),
-            (),
-            false,
         )
     }
 
