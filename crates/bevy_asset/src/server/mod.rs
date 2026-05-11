@@ -703,28 +703,6 @@ impl AssetServer {
         self.load_unknown_type_with_meta_transform(path, None)
     }
 
-    pub fn load_untyped_with_settings<'a>(
-        &self,
-        path: impl Into<AssetPath<'a>>,
-        settngs: Box<dyn Settings>,
-    ) -> Handle<LoadedUntypedAsset> {
-        self.load_unknown_type_with_meta_transform(
-            path,
-            Some(Box::new(move |meta| {
-                if let Some(loader_settings) = meta.loader_settings_mut() {
-                    if loader_settings.as_any().type_id() != settngs.as_any().type_id() {
-                        error!(
-                            "Configured settings type {} does not match AssetLoader settings type",
-                            settngs.reflect_type_path()
-                        );
-                    } else {
-                        loader_settings.apply(settngs.as_partial_reflect());
-                    }
-                }
-            })),
-        )
-    }
-
     /// Performs an async asset load.
     ///
     /// `input_handle` must only be [`Some`] if `should_load` was true when retrieving
