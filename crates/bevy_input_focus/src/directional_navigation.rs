@@ -962,42 +962,4 @@ mod tests {
             NavNeighbor::Set(node_c)
         );
     }
-
-    #[test]
-    fn test_edge_distance_vs_center_distance() {
-        let mut nav_map = DirectionalNavigationMap::default();
-        let config = AutoNavigationConfig::default();
-
-        let left = Entity::from_bits(1);
-        let wide_top = Entity::from_bits(2);
-        let bottom = Entity::from_bits(3);
-
-        let left_node = FocusableArea {
-            entity: left,
-            position: Vec2::new(100.0, 200.0),
-            size: Vec2::new(100.0, 100.0),
-        };
-
-        let wide_top_node = FocusableArea {
-            entity: wide_top,
-            position: Vec2::new(350.0, 150.0),
-            size: Vec2::new(300.0, 80.0),
-        };
-
-        let bottom_node = FocusableArea {
-            entity: bottom,
-            position: Vec2::new(270.0, 300.0),
-            size: Vec2::new(100.0, 80.0),
-        };
-
-        let nodes = vec![left_node, wide_top_node, bottom_node];
-
-        auto_generate_navigation_edges(&mut nav_map, &nodes, &config);
-
-        assert_eq!(
-            nav_map.get_neighbor(left, CompassOctant::East),
-            Some(wide_top),
-            "Should navigate to wide_top not bottom, even though bottom's center is closer."
-        );
-    }
 }

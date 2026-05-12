@@ -7,6 +7,7 @@ use super::dds::*;
 #[cfg(feature = "ktx2")]
 use super::ktx2::*;
 use bevy_app::{App, Plugin};
+use bevy_reflect::{ReflectDeserialize, ReflectSerialize};
 #[cfg(not(feature = "bevy_reflect"))]
 use bevy_reflect::TypePath;
 #[cfg(feature = "bevy_reflect")]
@@ -247,7 +248,8 @@ impl Plugin for ImagePlugin {
 }
 
 /// The format of an on-disk image asset.
-#[derive(Debug, Serialize, Deserialize, Copy, Clone)]
+#[derive(Debug, Serialize, Deserialize, Copy, Clone, Reflect)]
+#[reflect(Debug, Serialize, Deserialize, Clone)]
 pub enum ImageFormat {
     /// An image in basis universal format.
     #[cfg(feature = "basis-universal")]

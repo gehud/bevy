@@ -5,7 +5,7 @@ use crate::{
 use alloc::{boxed::Box, vec::Vec};
 use atomicow::CowArc;
 use bevy_platform::collections::{hash_map::Entry, HashMap};
-use bevy_reflect::TypePath;
+use bevy_reflect::{FromReflect, Reflectable, TypePath};
 use bevy_tasks::ConditionalSendFuture;
 use core::{
     borrow::Borrow,
@@ -25,7 +25,13 @@ pub trait AssetTransformer: TypePath + Send + Sync + 'static {
     /// The [`Asset`] type which this [`AssetTransformer`] outputs.
     type AssetOutput: Asset;
     /// The settings type used by this [`AssetTransformer`].
-    type Settings: Settings + Reflectable + FromReflect + Clone + Default + Serialize + for<'a> Deserialize<'a>;
+    type Settings: Settings
+        + Reflectable
+        + FromReflect
+        + Clone
+        + Default
+        + Serialize
+        + for<'a> Deserialize<'a>;
     /// The type of [error](`std::error::Error`) which could be encountered by this transformer.
     type Error: Into<Box<dyn core::error::Error + Send + Sync + 'static>>;
 

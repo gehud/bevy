@@ -1333,29 +1333,3 @@ pub fn detect_text_needs_rerender(
         }
     }
 }
-
-#[derive(Component, Debug, Copy, Clone, Default, Reflect, PartialEq)]
-#[reflect(Component, Default, Debug, Clone, PartialEq)]
-/// Font hinting strategy.
-///
-/// The text bounds can underflow or overflow slightly with `FontHinting::Enabled`.
-///
-/// <https://docs.rs/cosmic-text/latest/cosmic_text/enum.Hinting.html>
-pub enum FontHinting {
-    #[default]
-    /// Glyphs will have subpixel coordinates.
-    Disabled,
-    /// Glyphs will be snapped to integral coordinates in the X-axis during layout.
-    ///
-    /// The text bounds can underflow or overflow slightly with this enabled.
-    Enabled,
-}
-
-impl From<FontHinting> for cosmic_text::Hinting {
-    fn from(value: FontHinting) -> Self {
-        match value {
-            FontHinting::Disabled => cosmic_text::Hinting::Disabled,
-            FontHinting::Enabled => cosmic_text::Hinting::Enabled,
-        }
-    }
-}

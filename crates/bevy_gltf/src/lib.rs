@@ -138,6 +138,7 @@ pub mod vertex_attributes;
 extern crate alloc;
 
 use alloc::sync::Arc;
+use bevy_reflect::{Reflect, ReflectDeserialize, ReflectSerialize, std_traits::ReflectDefault};
 use serde::{Deserialize, Serialize};
 use std::sync::Mutex;
 use tracing::warn;
@@ -202,7 +203,8 @@ impl DefaultGltfImageSampler {
 
 /// Controls the bounds related components that are assigned to skinned mesh
 /// entities. These components are used by systems like frustum culling.
-#[derive(Default, Copy, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Default, Copy, Clone, PartialEq, Serialize, Deserialize, Reflect)]
+#[reflect(Default, Clone, PartialEq, Serialize, Deserialize)]
 pub enum GltfSkinnedMeshBoundsPolicy {
     /// Skinned meshes are assigned an `Aabb` component calculated from the bind
     /// pose `Mesh`.

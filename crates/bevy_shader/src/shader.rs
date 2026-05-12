@@ -1,7 +1,7 @@
 use super::ShaderDefVal;
 use alloc::borrow::Cow;
 use bevy_asset::{io::Reader, Asset, AssetLoader, AssetPath, Handle, LoadContext};
-use bevy_reflect::TypePath;
+use bevy_reflect::{Reflect, ReflectDeserialize, ReflectSerialize, TypePath, std_traits::ReflectDefault};
 use bevy_utils::define_atomic_id;
 use thiserror::Error;
 

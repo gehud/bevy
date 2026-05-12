@@ -9,7 +9,7 @@ use alloc::{boxed::Box, string::ToString, sync::Arc, vec::Vec};
 use atomicow::CowArc;
 use bevy_ecs::error::BevyError;
 use bevy_platform::collections::{hash_map::Entry, HashMap};
-use bevy_reflect::TypePath;
+use bevy_reflect::{FromReflect, Reflectable, TypePath};
 use bevy_tasks::{BoxedFuture, ConditionalSendFuture};
 use core::{any::TypeId, borrow::Borrow, ops::Deref};
 use futures_lite::AsyncWriteExt;

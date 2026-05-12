@@ -85,7 +85,8 @@ pub struct ShaderCache<ShaderModule, RenderDevice> {
 /// A compile time shader value definition to be inlined into the shader source.
 /// Variant tuples contain the name of the definition, and the value.
 #[expect(missing_docs, reason = "Enum variants are self-explanatory")]
-#[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Eq, Debug, Hash)]
+#[derive(serde::Serialize, serde::Deserialize, Clone, PartialEq, Eq, Debug, Hash, Reflect)]
+#[reflect(Serialize, Deserialize, Clone, PartialEq, Debug, Hash)]
 pub enum ShaderDefVal {
     Bool(String, bool),
     Int(String, i32),

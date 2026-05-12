@@ -13,7 +13,8 @@ use wgpu_types::{Extent3d, TextureDimension, TextureFormat};
 pub struct HdrTextureLoader;
 
 /// Settings for [`HdrTextureLoader`].
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Clone, Default, Debug, Reflect)]
+#[reflect(Serialize, Deserialize, Clone, Default, Debug)]
 pub struct HdrTextureLoaderSettings {
     /// Where the asset will be used - see the docs on [`RenderAssetUsages`] for details.
     pub asset_usage: RenderAssetUsages,

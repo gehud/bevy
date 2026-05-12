@@ -29,7 +29,6 @@ use crate::{
     Justify, LetterSpacing, LineBreak, LineHeight, PositionedGlyph, TextBounds, TextEntity,
     TextFont, TextLayout,
 };
-use cosmic_text::{Attrs, Buffer, Family, Metrics, Shaping, Wrap};
 
 struct TextSectionView<'a> {
     index: usize,

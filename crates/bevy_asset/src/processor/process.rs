@@ -17,7 +17,7 @@ use alloc::{
     vec::Vec,
 };
 use bevy_ecs::error::BevyError;
-use bevy_reflect::TypePath;
+use bevy_reflect::{Reflect, ReflectDeserialize, ReflectSerialize, TypePath, std_traits::ReflectDefault};
 use bevy_tasks::{BoxedFuture, ConditionalSendFuture};
 use core::marker::PhantomData;
 use serde::{Deserialize, Serialize};

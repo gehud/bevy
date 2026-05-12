@@ -189,9 +189,6 @@ impl Plugin for ViewPlugin {
                     cleanup_view_targets_for_resize
                         .in_set(RenderSystems::PrepareViews)
                         .before(create_surfaces),
-                    cleanup_view_targets_for_resize
-                        .in_set(RenderSystems::ManageViews)
-                        .before(create_surfaces),
                     prepare_view_attachments
                         .in_set(RenderSystems::PrepareViews)
                         .before(prepare_view_targets)

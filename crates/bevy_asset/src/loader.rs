@@ -10,7 +10,7 @@ use alloc::{boxed::Box, string::ToString, vec::Vec};
 use atomicow::CowArc;
 use bevy_ecs::{error::BevyError, world::World};
 use bevy_platform::collections::{hash_map::Entry, HashMap, HashSet};
-use bevy_reflect::TypePath;
+use bevy_reflect::{FromReflect, Reflectable, TypePath};
 use bevy_tasks::{BoxedFuture, ConditionalSendFuture};
 use core::{
     any::{Any, TypeId},

@@ -1,7 +1,7 @@
 use std::io::Cursor;
 
 use bevy_asset::{saver::AssetSaver, AssetPath, AsyncWriteExt};
-use bevy_reflect::TypePath;
+use bevy_reflect::{Reflect, ReflectDeserialize, ReflectSerialize, TypePath, std_traits::ReflectDefault};
 use image::{write_buffer_with_format, ExtendedColorType};
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
@@ -107,14 +107,16 @@ impl AssetSaver for ImageSaver {
 }
 
 /// Settings for how to save an image.
-#[derive(Serialize, Deserialize, Default, Clone, Debug)]
+#[derive(Serialize, Deserialize, Default, Clone, Debug, Reflect)]
+#[reflect(Serialize, Deserialize, Default, Clone, Debug)]
 pub struct ImageSaverSettings {
     /// Defines the file format that the image will be saved as.
     pub format: SaveImageFormatSetting,
 }
 
 /// The setting for how to choose which file-format to use.
-#[derive(Serialize, Deserialize, Default, Clone, Copy, Debug)]
+#[derive(Serialize, Deserialize, Default, Clone, Copy, Debug, Reflect)]
+#[reflect(Serialize, Deserialize, Default, Clone, Debug)]
 pub enum SaveImageFormatSetting {
     /// The file format to write will be deduced from the file path being written to.
     #[default]

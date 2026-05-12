@@ -61,7 +61,8 @@ impl ConvertCoordinates for [f32; 4] {
 /// Other entities in the scene are not converted, so their forward may not
 /// match `Transform::forward`. In particular, the entities that correspond to
 /// glTF nodes are not converted.
-#[derive(Copy, Clone, Default, Debug, Serialize, Deserialize)]
+#[derive(Copy, Clone, Default, Debug, Serialize, Deserialize, Reflect)]
+#[reflect(Clone, Default, Debug, Serialize, Deserialize)]
 pub struct GltfConvertCoordinates {
     /// If true, convert scenes by rotating the top-level transform of the scene entity.
     /// This will ensure that [`Transform::forward`] of the "root" entity (the one with [`WorldInstance`](bevy_world_serialization::WorldInstance))
