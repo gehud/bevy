@@ -1,15 +1,18 @@
 use bevy_app::{Plugin, PreUpdate, PropagateOver};
+use bevy_camera::visibility::Visibility;
 use bevy_ecs::{
     change_detection::DetectChanges,
+    component::Component,
     entity::Entity,
+    hierarchy::{ChildOf, Children},
     lifecycle::RemovedComponents,
-    query::{Added, Has, With},
+    query::{Added, Changed, Has, With},
     reflect::ReflectComponent,
     schedule::IntoScheduleConfigs,
     system::{Commands, Query, Res},
 };
 use bevy_input_focus::tab_navigation::TabIndex;
-use bevy_picking::{cursor::EntityCursor, PickingSystems};
+use bevy_picking::{cursor::EntityCursor, Pickable, PickingSystems};
 use bevy_reflect::std_traits::ReflectDefault;
 use bevy_reflect::Reflect;
 use bevy_scene::prelude::*;
@@ -18,7 +21,8 @@ use bevy_text::{
     TextReadWriteMode,
 };
 use bevy_ui::{
-    px, AlignItems, BorderRadius, Display, InteractionDisabled, JustifyContent, Node, UiRect,
+    px, widget::Text, AlignItems, BorderRadius, Display, InteractionDisabled, JustifyContent, Node,
+    PositionType, UiRect,
 };
 use bevy_ui_widgets::TextInput;
 
@@ -131,6 +135,78 @@ impl FeathersTextInput {
     }
 }
 
+/// Marker for the placeholder label of a text input; see [`text_input_placeholder`].
+#[derive(Component, Default, Clone, Reflect)]
+#[reflect(Component, Default, Clone)]
+pub struct FeathersTextInputPlaceholder;
+
+/// Scene function for a placeholder label, shown while the sibling [`FeathersTextInput`] is empty.
+///
+/// Place it inside the same [`FeathersTextInputContainer`] as the input. It is absolutely
+/// positioned over the input and ignores picking, so clicks still reach the input. Patch its
+/// `Node` to line it up with a container that uses different padding, and its
+/// [`InheritableThemeTextColor`] to change the text color.
+///
+/// ```ignore
+/// @FeathersTextInputContainer
+/// Children [
+///     @FeathersTextInput
+///     --
+///     @text_input_placeholder("Search...")
+/// ]
+/// ```
+pub fn text_input_placeholder(text: impl Into<String>) -> impl Scene {
+    bsn! {
+        // The container spans the input's height and centers the text vertically.
+        Node {
+            position_type: PositionType::Absolute,
+            left: px(3),
+            top: px(0),
+            bottom: px(0),
+            display: Display::Flex,
+            align_items: AlignItems::Center,
+        }
+        FeathersTextInputPlaceholder
+        Pickable::IGNORE
+        InheritableThemeTextColor(tokens::TEXT_DIM)
+        Children [
+            Text(text)
+            ThemedText
+            TextFont {
+                font: FontSourceTemplate::Handle(fonts::REGULAR),
+                font_size: size::COMPACT_FONT,
+                weight: FontWeight::NORMAL,
+            }
+            Pickable::IGNORE
+        ]
+    }
+}
+
+/// Shows each placeholder only while the text input next to it is empty.
+fn update_text_input_placeholders(
+    q_inputs: Query<(&EditableText, &ChildOf), (With<FeathersTextInput>, Changed<EditableText>)>,
+    q_children: Query<&Children>,
+    mut q_placeholders: Query<&mut Visibility, With<FeathersTextInputPlaceholder>>,
+) {
+    for (editable, child_of) in &q_inputs {
+        let visibility = if editable.value() == "" {
+            Visibility::Inherited
+        } else {
+            Visibility::Hidden
+        };
+        let Ok(siblings) = q_children.get(child_of.parent()) else {
+            continue;
+        };
+        for &sibling in siblings {
+            if let Ok(mut placeholder) = q_placeholders.get_mut(sibling)
+                && *placeholder != visibility
+            {
+                *placeholder = visibility;
+            }
+        }
+    }
+}
+
 fn update_text_cursor_color(
     mut q_text_input: Query<(&mut TextCursorStyle, Option<&ThemeContext>), With<FeathersTextInput>>,
     theme: Res<UiTheme>,
@@ -220,6 +296,7 @@ impl Plugin for TextInputPlugin {
                 update_text_cursor_color,
                 update_text_input_styles,
                 update_text_input_styles_remove,
+                update_text_input_placeholders,
             )
                 .in_set(PickingSystems::Last),
         );

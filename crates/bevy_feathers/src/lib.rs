@@ -62,6 +62,8 @@ impl Plugin for FeathersCorePlugin {
         embedded_asset!(app, "assets/fonts/FiraSans-Bold.ttf");
         embedded_asset!(app, "assets/fonts/FiraSans-BoldItalic.ttf");
         embedded_asset!(app, "assets/fonts/FiraSans-Regular.ttf");
+        embedded_asset!(app, "assets/fonts/FiraSans-Medium.ttf");
+        embedded_asset!(app, "assets/fonts/FiraSans-SemiBold.ttf");
         embedded_asset!(app, "assets/fonts/FiraSans-Italic.ttf");
         embedded_asset!(app, "assets/fonts/FiraMono-Medium.ttf");
         embedded_asset!(app, "assets/fonts/NotoSansSymbols2-U+1F7D5.ttf");
@@ -70,6 +72,39 @@ impl Plugin for FeathersCorePlugin {
         embedded_asset!(app, "assets/icons/chevron-down.png");
         embedded_asset!(app, "assets/icons/chevron-right.png");
         embedded_asset!(app, "assets/icons/x.png");
+        embedded_asset!(app, "assets/icons/plus.png");
+        embedded_asset!(app, "assets/icons/funnel.png");
+        embedded_asset!(app, "assets/icons/ellipsis.png");
+        embedded_asset!(app, "assets/icons/package-plus.png");
+        embedded_asset!(app, "assets/icons/video.png");
+        embedded_asset!(app, "assets/icons/eye.png");
+        embedded_asset!(app, "assets/icons/eye-off.png");
+        embedded_asset!(app, "assets/icons/dot.png");
+        embedded_asset!(app, "assets/icons/lightbulb.png");
+        embedded_asset!(app, "assets/icons/box.png");
+        embedded_asset!(app, "assets/icons/box-large.png");
+        embedded_asset!(app, "assets/icons/search.png");
+        embedded_asset!(app, "assets/icons/file-image.png");
+        embedded_asset!(app, "assets/icons/file.png");
+        embedded_asset!(app, "assets/icons/file-small.png");
+        embedded_asset!(app, "assets/icons/calendar-search.png");
+        embedded_asset!(app, "assets/icons/grip-vertical.png");
+        embedded_asset!(app, "assets/icons/move-3d.png");
+        embedded_asset!(app, "assets/icons/move-3d-small.png");
+        embedded_asset!(app, "assets/icons/rotate-3d.png");
+        embedded_asset!(app, "assets/icons/scale-3d.png");
+        embedded_asset!(app, "assets/icons/magnet.png");
+        embedded_asset!(app, "assets/icons/terminal.png");
+        embedded_asset!(app, "assets/icons/folder-open.png");
+        embedded_asset!(app, "assets/icons/folder-filled.png");
+        embedded_asset!(app, "assets/icons/git-pull-request-arrow.png");
+        embedded_asset!(app, "assets/icons/circle-x.png");
+        embedded_asset!(app, "assets/icons/triangle-alert.png");
+        embedded_asset!(app, "assets/icons/play.png");
+        embedded_asset!(app, "assets/icons/pause.png");
+        embedded_asset!(app, "assets/icons/x-small.png");
+        embedded_asset!(app, "assets/icons/circle-filled.png");
+        embedded_asset!(app, "assets/icons/tab-corner.png");
 
         // Embedded shader
         embedded_asset!(app, "assets/shaders/alpha_pattern.wesl");
